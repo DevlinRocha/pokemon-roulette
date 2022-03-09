@@ -12,7 +12,7 @@ export default defineComponent({
     const pokemonData = await this.getPokemon(this.getRandomId(this.pokedex));
 
     this.pokemon = {
-      name: pokemonData.name.toLowerCase(),
+      name: pokemonData.species.name.toLowerCase(),
       img: pokemonData.sprites.front_default,
     };
   },
