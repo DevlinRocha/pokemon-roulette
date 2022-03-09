@@ -9,19 +9,14 @@ export interface PokemonData {
 
 export default defineComponent({
   async mounted() {
-    const pokemonData = await this.getPokemon(this.getRandomId(this.pokedex));
-
-    this.pokemon = {
-      name: pokemonData.species.name.toLowerCase(),
-      img: pokemonData.sprites.front_default,
-    };
+    this.setPokemon();
   },
 
   data() {
     return {
       pokedex: 898, // Maximum Pokémon ID,
 
-      pokemon: { name: "", img: "" }, // Current Pokémon
+      pokemon: {} as PokemonData, // Current Pokémon
     };
   },
 
@@ -34,6 +29,15 @@ export default defineComponent({
       return await response.json();
     },
 
+    async setPokemon() {
+      const pokemonData = await this.getPokemon(this.getRandomId(this.pokedex));
+
+      this.pokemon = {
+        name: pokemonData.species.name.toLowerCase(),
+        img: pokemonData.sprites.front_default,
+      };
+    },
+
     getRandomId(max: number) {
       return Math.floor(Math.random() * max) + 1;
     },
@@ -44,6 +48,8 @@ export default defineComponent({
 
 <template>
   <Pokemon :pokemon="pokemon" />
+
+  <button @click="setPokemon">Reset</button>
 </template>
 
 <style>
