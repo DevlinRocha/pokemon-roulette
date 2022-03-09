@@ -34,18 +34,20 @@ export default defineComponent({
     },
 
     async setPokemon() {
-      const pokemonData = await this.getPokemon(this.getRandomId(this.pokedex));
+      const pokemonData = await this.getPokemon(
+        this.getRandomId(1, this.pokedex)
+      );
+
+      this.reset();
 
       this.pokemon = {
         name: pokemonData.species.name.toLowerCase(),
         img: pokemonData.sprites.front_default,
       };
-
-      this.reset();
     },
 
-    getRandomId(max: number) {
-      return Math.floor(Math.random() * max) + 1;
+    getRandomId(min: number, max: number) {
+      return Math.floor(Math.random() * (max + 1 - min)) + min;
     },
 
     handleInput() {
