@@ -1,27 +1,22 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import Pokemon from "./components/Pokemon.vue";
-
-export interface PokemonData {
-  name: string;
-  img: string;
-}
+import { PokemonResource, PokemonData } from "./resources/pokemonResource";
 
 export default defineComponent({
   async mounted() {
-    const pokemonData = await this.getPokemon(this.getRandomId(this.pokedex));
-
-    this.pokemon = {
-      name: pokemonData.name.toLowerCase(),
-      img: pokemonData.sprites.front_default,
-    };
+    // Odd Pokémon:
+    // 413,
+    // this.pokemon = await PokemonResource.detail(54);
+    let response = await PokemonResource.list();
+    this.pokemon = response.resources;
+    console.log(this.pokemon);
   },
 
   data() {
     return {
       pokedex: 898, // Maximum Pokémon ID,
-
-      pokemon: { name: "", img: "" }, // Current Pokémon
+      pokemon: undefined as any, // Current Pokémon
     };
   },
 
@@ -30,8 +25,11 @@ export default defineComponent({
       if (id > this.pokedex)
         throw new Error("Pokémon not found. There are 898 known Pokémon.");
 
-      const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
-      return await response.json();
+      // const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
+      // return await response.json();
+
+      // let randomPokemon =
+      // return randomPokemon;
     },
 
     getRandomId(max: number) {
@@ -43,7 +41,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <Pokemon :pokemon="pokemon" />
+  <!-- <Pokemon :pokemon="pokemon" /> -->
 </template>
 
 <style>
