@@ -14,9 +14,13 @@ export default defineComponent({
 
   data() {
     return {
+      title: "Who's that Pokémon?",
+
       pokedex: 898, // Maximum Pokémon ID,
 
       pokemon: {} as PokemonData, // Current Pokémon
+
+      isGuessCorrect: false,
     };
   },
 
@@ -36,10 +40,35 @@ export default defineComponent({
         name: pokemonData.species.name.toLowerCase(),
         img: pokemonData.sprites.front_default,
       };
+
+      this.reset();
     },
 
     getRandomId(max: number) {
       return Math.floor(Math.random() * max) + 1;
+    },
+
+    handleInput() {
+      const input = this.$refs.inputRef as HTMLInputElement;
+
+      if (input.value.toLowerCase() === this.pokemon.name.toLowerCase())
+        this.correctGuess();
+    },
+
+    correctGuess() {
+      this.isGuessCorrect = true;
+      this.title = `It's ${this.capitalize(this.pokemon.name)}!`;
+    },
+
+    capitalize(str: string) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    },
+
+    reset() {
+      const input = this.$refs.inputRef as HTMLInputElement;
+      input.value = "";
+      this.isGuessCorrect = false;
+      this.title = "Who's that Pokémon?";
     },
   },
   components: { Pokemon },
@@ -47,9 +76,15 @@ export default defineComponent({
 </script>
 
 <template>
-  <Pokemon :pokemon="pokemon" />
+  <div class="container">
+    <h1>{{ title }}</h1>
 
-  <button @click="setPokemon">Reset</button>
+    <Pokemon :pokemon="pokemon" :isGuessCorrect="isGuessCorrect" />
+
+    <input @input="handleInput" ref="inputRef" type="text" />
+
+    <button @click="setPokemon">Reset</button>
+  </div>
 </template>
 
 <style>
@@ -70,5 +105,11 @@ export default defineComponent({
   margin-top: 16px;
   min-width: 100vw;
   min-height: 100vh;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 </style>
