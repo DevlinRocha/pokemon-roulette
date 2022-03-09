@@ -12,15 +12,13 @@ export default defineComponent({
     const pokemonData = await this.getPokemon(this.getRandomId(this.pokedex));
 
     this.pokemon = {
-      name: pokemonData.name,
+      name: pokemonData.name.toLowerCase(),
       img: pokemonData.sprites.front_default,
     };
   },
 
   data() {
     return {
-      title: "Who's that Pokémon?",
-
       pokedex: 898, // Maximum Pokémon ID,
 
       pokemon: { name: "", img: "" }, // Current Pokémon
@@ -45,18 +43,26 @@ export default defineComponent({
 </script>
 
 <template>
-  <h1>{{ title }}</h1>
-
   <Pokemon :pokemon="pokemon" />
 </template>
 
-<style scoped>
+<style>
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  margin-top: 16px;
+  min-width: 100vw;
+  min-height: 100vh;
 }
 </style>
