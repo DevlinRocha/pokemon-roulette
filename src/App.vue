@@ -23,6 +23,8 @@ export default defineComponent({
 
       pokemon: {} as PokemonData,
 
+      inputRef: "",
+
       isGuessCorrect: false,
     };
   },
@@ -54,9 +56,7 @@ export default defineComponent({
     },
 
     handleInput() {
-      const input = this.$refs.inputRef as HTMLInputElement;
-
-      if (input.value.toLowerCase() === this.pokemon.name.toLowerCase())
+      if (this.inputRef.toLowerCase() === this.pokemon.name.toLowerCase())
         this.correctGuess();
     },
 
@@ -70,8 +70,7 @@ export default defineComponent({
     },
 
     reset() {
-      const input = this.$refs.inputRef as HTMLInputElement;
-      input.value = "";
+      this.inputRef = "";
       this.isGuessCorrect = false;
       this.title = "Who's that Pokémon?";
     },
@@ -90,7 +89,7 @@ export default defineComponent({
       <div class="container">
         <Pokemon :pokemon="pokemon" :isGuessCorrect="isGuessCorrect" />
 
-        <input @input="handleInput" ref="inputRef" type="text" />
+        <input @input="handleInput" v-model="inputRef" type="text" />
 
         <button @click="setPokemon">Reset</button>
       </div>
