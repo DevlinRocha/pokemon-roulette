@@ -1,6 +1,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import Pokemon from "./components/Pokemon.vue";
+import GenerationFilter from "./components/GenerationFilter.vue";
 
 export interface PokemonData {
   name: string;
@@ -8,7 +9,7 @@ export interface PokemonData {
 }
 
 export default defineComponent({
-  async mounted() {
+  mounted() {
     this.setPokemon();
   },
 
@@ -16,9 +17,11 @@ export default defineComponent({
     return {
       title: "Who's that Pokémon?",
 
-      pokedex: 898, // Maximum Pokémon ID,
+      minPokedex: 1,
 
-      pokemon: {} as PokemonData, // Current Pokémon
+      maxPokedex: 898,
+
+      pokemon: {} as PokemonData,
 
       isGuessCorrect: false,
     };
@@ -26,7 +29,7 @@ export default defineComponent({
 
   methods: {
     async getPokemon(id: number) {
-      if (id > this.pokedex)
+      if (id > this.maxPokedex)
         throw new Error("Pokémon not found. There are 898 known Pokémon.");
 
       const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
@@ -35,7 +38,7 @@ export default defineComponent({
 
     async setPokemon() {
       const pokemonData = await this.getPokemon(
-        this.getRandomId(1, this.pokedex)
+        this.getRandomId(this.minPokedex, this.maxPokedex)
       );
 
       this.reset();
@@ -73,7 +76,7 @@ export default defineComponent({
       this.title = "Who's that Pokémon?";
     },
   },
-  components: { Pokemon },
+  components: { Pokemon, GenerationFilter },
 });
 </script>
 
@@ -81,11 +84,17 @@ export default defineComponent({
   <div class="container">
     <h1>{{ title }}</h1>
 
-    <Pokemon :pokemon="pokemon" :isGuessCorrect="isGuessCorrect" />
+    <div class="flex">
+      <GenerationFilter />
 
-    <input @input="handleInput" ref="inputRef" type="text" />
+      <div class="container">
+        <Pokemon :pokemon="pokemon" :isGuessCorrect="isGuessCorrect" />
 
-    <button @click="setPokemon">Reset</button>
+        <input @input="handleInput" ref="inputRef" type="text" />
+
+        <button @click="setPokemon">Reset</button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -113,5 +122,9 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.flex {
+  display: flex;
 }
 </style>
