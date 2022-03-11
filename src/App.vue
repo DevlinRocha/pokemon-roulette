@@ -67,7 +67,7 @@ export default defineComponent({
           range: [810, 905],
         },
       ] as GenerationData[],
-      selectedGenerationIds: [] as Number[],
+      selectedGenerationIds: [1, 2, 3, 4, 5, 6, 7, 8],
       inputRef: "",
       isGuessCorrect: false,
     };
