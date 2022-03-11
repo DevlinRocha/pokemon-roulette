@@ -76,13 +76,15 @@ export default defineComponent({
   methods: {
     async getPokemon(id: number) {
       if (id > this.maxPokedex)
-        throw new Error("Pokémon not found. There are 898 known Pokémon.");
+        throw new Error(
+          `Pokémon not found. There are ${this.maxPokedex} known Pokémon.`
+        );
 
       const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
       return await response.json();
     },
 
-    async setPokemon(): Promise<any> {
+    async setPokemon() {
       let validPokemonId = false;
       let pokemonId: number;
 
@@ -90,20 +92,14 @@ export default defineComponent({
         // Can change minPokedex and maxPokedex for further optimization
         pokemonId = this.getRandomId(this.minPokedex, this.maxPokedex);
 
-        console.log("Testing Pokémon...");
+        validPokemonId = this.acceptedPokemonIdRanges.some(
+          (range: [number, number]) =>
+            pokemonId > range[0] && pokemonId < range[1]
+        );
 
-        //If ID Is valid, set validPokemonId true
-        for (const range of this.acceptedPokemonIdRanges) {
-          console.log("Checking generation...");
-          if (pokemonId > range[0] && pokemonId < range[1]) {
-            // This doesn't break the loop
-            validPokemonId = true;
-            console.log("Good Pokémon!");
-          }
+        if (this.acceptedPokemonIdRanges.length === 0) {
+          validPokemonId = true;
         }
-
-        // Removing this line causes infinite loop until function is working
-        validPokemonId = true;
       } while (!validPokemonId);
 
       const pokemonData = await this.getPokemon(pokemonId);
@@ -161,8 +157,8 @@ export default defineComponent({
 
     <div class="flex">
       <GenerationFilter
-        :generations="generations"
         v-model="selectedGenerationIds"
+        :generations="generations"
       />
 
       <div class="container">
