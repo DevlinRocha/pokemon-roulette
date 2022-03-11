@@ -8,20 +8,13 @@ export default defineComponent({
       type: Object as PropType<PokemonData>,
       required: true,
     },
-
-    isGuessCorrect: {
-      type: Boolean,
-      required: true,
-    },
+    isGuessCorrect: Boolean,
   },
 });
 </script>
 
 <template>
-  <img
-    :class="[$props.isGuessCorrect === false ? 'unknown' : '']"
-    :src="$props.pokemon.img"
-  />
+  <img :class="[isGuessCorrect === false ? 'unknown' : '']" :src="pokemon.img" />
 </template>
 
 <style scoped>

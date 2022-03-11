@@ -8,6 +8,12 @@ export interface PokemonData {
   img: string;
 }
 
+export interface GenerationData {
+  id: number;
+  name: string;
+  range: [number, number];
+}
+
 export default defineComponent({
   mounted() {
     this.setPokemon();
@@ -16,15 +22,53 @@ export default defineComponent({
   data() {
     return {
       title: "Who's that Pokémon?",
-
       minPokedex: 1,
-
       maxPokedex: 898,
-
       pokemon: {} as PokemonData,
-
+      generations: [
+        {
+          id: 1,
+          name: "Gen I",
+          range: [1, 151],
+        },
+        {
+          id: 2,
+          name: "Gen II",
+          range: [152, 251],
+        },
+        {
+          id: 3,
+          name: "Gen III",
+          range: [252, 386],
+        },
+        {
+          id: 4,
+          name: "Gen IV",
+          range: [387, 493],
+        },
+        {
+          id: 5,
+          name: "Gen V",
+          range: [494, 649],
+        },
+        {
+          id: 6,
+          name: "Gen VI",
+          range: [650, 721],
+        },
+        {
+          id: 7,
+          name: "Gen VII",
+          range: [722, 809],
+        },
+        {
+          id: 8,
+          name: "Gen VIII",
+          range: [810, 905],
+        },
+      ] as GenerationData[],
+      selectedGenerationIds: [] as Number[],
       inputRef: "",
-
       isGuessCorrect: false,
     };
   },
@@ -38,10 +82,31 @@ export default defineComponent({
       return await response.json();
     },
 
-    async setPokemon() {
-      const pokemonData = await this.getPokemon(
-        this.getRandomId(this.minPokedex, this.maxPokedex)
-      );
+    async setPokemon(): Promise<any> {
+      let validPokemonId = false;
+      let pokemonId: number;
+
+      do {
+        // Can change minPokedex and maxPokedex for further optimization
+        pokemonId = this.getRandomId(this.minPokedex, this.maxPokedex);
+
+        console.log("Testing Pokémon...");
+
+        //If ID Is valid, set validPokemonId true
+        for (const range of this.acceptedPokemonIdRanges) {
+          console.log("Checking generation...");
+          if (pokemonId > range[0] && pokemonId < range[1]) {
+            // This doesn't break the loop
+            validPokemonId = true;
+            console.log("Good Pokémon!");
+          }
+        }
+
+        // Removing this line causes infinite loop until function is working
+        validPokemonId = true;
+      } while (!validPokemonId);
+
+      const pokemonData = await this.getPokemon(pokemonId);
 
       this.reset();
 
@@ -75,6 +140,17 @@ export default defineComponent({
       this.title = "Who's that Pokémon?";
     },
   },
+
+  computed: {
+    acceptedPokemonIdRanges: ({ selectedGenerationIds, generations }) => {
+      return selectedGenerationIds.map((id: number) => {
+        let selectedGeneration = generations.find(
+          (generation: GenerationData) => generation.id === id
+        );
+        return selectedGeneration.range;
+      });
+    },
+  },
   components: { Pokemon, GenerationFilter },
 });
 </script>
@@ -84,7 +160,10 @@ export default defineComponent({
     <h1>{{ title }}</h1>
 
     <div class="flex">
-      <GenerationFilter />
+      <GenerationFilter
+        :generations="generations"
+        v-model="selectedGenerationIds"
+      />
 
       <div class="container">
         <Pokemon :pokemon="pokemon" :isGuessCorrect="isGuessCorrect" />

@@ -1,67 +1,26 @@
 <script lang="ts">
-import { defineComponent } from "vue";
-
-interface GenerationData {
-  name: string;
-  range: [number, number];
-  isChecked: boolean;
-}
+import { defineComponent, PropType } from "vue";
+import { GenerationData } from "../App.vue";
 
 export default defineComponent({
-  mounted() {
-    console.log(this.generations);
-  },
-
-  data() {
-    return {
-      generations: [
-        {
-          name: "Gen I",
-          range: [1, 151],
-          isChecked: true,
-        },
-        {
-          name: "Gen II",
-          range: [152, 251],
-          isChecked: true,
-        },
-        {
-          name: "Gen III",
-          range: [252, 386],
-          isChecked: true,
-        },
-        {
-          name: "Gen IV",
-          range: [387, 493],
-          isChecked: true,
-        },
-        {
-          name: "Gen V",
-          range: [494, 649],
-          isChecked: true,
-        },
-        {
-          name: "Gen VI",
-          range: [650, 721],
-          isChecked: true,
-        },
-        {
-          name: "Gen VII",
-          range: [722, 809],
-          isChecked: true,
-        },
-        {
-          name: "Gen VIII",
-          range: [810, 905],
-          isChecked: true,
-        },
-      ] as GenerationData[],
-    };
+  props: {
+    modelValue: {
+      type: Array as PropType<Number[]>,
+      required: true,
+    },
+    generations: {
+      type: Array as PropType<GenerationData[]>,
+      required: true,
+    },
   },
 
   methods: {
-    getPokedexRange(generations: GenerationData[]) {
-      console.log(generations);
+    isChecked(id: number) {
+      return this.modelValue.includes(id);
+    },
+
+    selectGeneration(id: number) {
+      this.$emit("update:modelValue", !this.isChecked(id) ? [...this.modelValue, id] : this.modelValue.filter((number) => number !== id));
     },
   },
 });
@@ -69,16 +28,10 @@ export default defineComponent({
 
 <template>
   <div>
-    <div v-for="(generation, index) in generations" :key="index">
-      <label :for="`gen${index}`">{{ generation.name }}</label>
+    <div v-for="generation in generations" :key="generation.id">
+      <label :for="`gen${generation.id}`">{{ generation.name }}</label>
 
-      <input
-        :id="`gen${index}`"
-        type="checkbox"
-        :checked="generation.isChecked"
-        :v-model="!generation.isChecked"
-        @change="getPokedexRange(generations)"
-      />
+      <input :id="`gen${generation.id}`" :checked="isChecked(generation.id)" type="checkbox" @change="selectGeneration(generation.id)" />
     </div>
   </div>
 </template>
