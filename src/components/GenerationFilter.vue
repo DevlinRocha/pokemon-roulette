@@ -19,8 +19,20 @@ export default defineComponent({
       return this.modelValue.includes(id);
     },
 
-    selectGeneration(id: number) {
-      this.$emit("update:modelValue", !this.isChecked(id) ? [...this.modelValue, id] : this.modelValue.filter((number) => number !== id));
+    toggleGeneration(id: number) {
+      this.isToggleValid(id)
+        ? this.$emit(
+            "update:modelValue",
+            !this.isChecked(id)
+              ? [...this.modelValue, id]
+              : this.modelValue.filter((number) => number !== id)
+          )
+        : null;
+    },
+
+    isToggleValid(id: number) {
+      if (this.modelValue.length <= 1 && this.isChecked(id)) return false;
+      return true;
     },
   },
 });
@@ -31,7 +43,13 @@ export default defineComponent({
     <div v-for="generation in generations" :key="generation.id">
       <label :for="`gen${generation.id}`">{{ generation.name }}</label>
 
-      <input :id="`gen${generation.id}`" :checked="isChecked(generation.id)" type="checkbox" @change="selectGeneration(generation.id)" />
+      <input
+        :id="`gen${generation.id}`"
+        :checked="isChecked(generation.id)"
+        type="checkbox"
+        :disabled="!isToggleValid(generation.id)"
+        @change="toggleGeneration(generation.id)"
+      />
     </div>
   </div>
 </template>
