@@ -2,6 +2,7 @@
 import { defineComponent } from "vue";
 import Pokemon from "./components/Pokemon.vue";
 import GenerationFilter from "./components/GenerationFilter.vue";
+import DifficultySelection from "./components/DifficultySelection.vue";
 
 export interface PokemonData {
   name: string;
@@ -70,6 +71,7 @@ export default defineComponent({
       selectedGenerationIds: [1, 2, 3, 4, 5, 6, 7, 8],
       inputRef: "",
       isGuessCorrect: false,
+      difficulty: "normal",
     };
   },
 
@@ -147,7 +149,7 @@ export default defineComponent({
       });
     },
   },
-  components: { Pokemon, GenerationFilter },
+  components: { Pokemon, GenerationFilter, DifficultySelection },
 });
 </script>
 
@@ -162,12 +164,18 @@ export default defineComponent({
       />
 
       <div class="container">
-        <Pokemon :pokemon="pokemon" :isGuessCorrect="isGuessCorrect" />
+        <Pokemon
+          :pokemon="pokemon"
+          :difficulty="difficulty"
+          :isGuessCorrect="isGuessCorrect"
+        />
 
         <input @input="handleInput" v-model="inputRef" type="text" />
 
         <button @click="setPokemon">Reset</button>
       </div>
+
+      <DifficultySelection v-model="difficulty" />
     </div>
   </div>
 </template>
@@ -187,7 +195,7 @@ export default defineComponent({
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 16px;
+  padding-top: 16px;
   min-width: 100vw;
   min-height: 100vh;
 }

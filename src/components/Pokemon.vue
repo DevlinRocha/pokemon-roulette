@@ -8,13 +8,21 @@ export default defineComponent({
       type: Object as PropType<PokemonData>,
       required: true,
     },
+
+    difficulty: String,
+
     isGuessCorrect: Boolean,
   },
 });
 </script>
 
 <template>
-  <img :class="[isGuessCorrect === false ? 'unknown' : '']" :src="pokemon.img" />
+  <img
+    :class="[
+      isGuessCorrect === false && difficulty === 'normal' ? 'unknown' : '',
+    ]"
+    :src="pokemon.img"
+  />
 </template>
 
 <style scoped>
