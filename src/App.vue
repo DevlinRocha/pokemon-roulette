@@ -69,7 +69,7 @@ export default defineComponent({
         },
       ] as GenerationData[],
       selectedGenerationIds: [1, 2, 3, 4, 5, 6, 7, 8],
-      inputRef: "",
+      inputVal: "",
       isGuessCorrect: false,
       difficulty: "normal",
     };
@@ -119,7 +119,9 @@ export default defineComponent({
     },
 
     handleInput() {
-      if (this.inputRef.toLowerCase() === this.pokemon.name.toLowerCase())
+      this.inputVal = this.capitalize(this.inputVal);
+
+      if (this.inputVal.toLowerCase() === this.pokemon.name.toLowerCase())
         this.correctGuess();
     },
 
@@ -133,7 +135,7 @@ export default defineComponent({
     },
 
     reset() {
-      this.inputRef = "";
+      this.inputVal = "";
       this.isGuessCorrect = false;
       this.title = "Who's that Pokémon?";
     },
@@ -170,7 +172,7 @@ export default defineComponent({
           :isGuessCorrect="isGuessCorrect"
         />
 
-        <input @input="handleInput" v-model="inputRef" type="text" />
+        <input @input="handleInput" v-model="inputVal" type="text" />
 
         <button @click="setPokemon">Reset</button>
       </div>
