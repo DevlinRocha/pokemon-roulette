@@ -242,6 +242,8 @@ export default defineComponent({
   padding: 16px;
   min-width: 100vw;
   min-height: 100vh;
+  width: 100vw;
+  height: 100vh;
 }
 </style>
 
@@ -265,7 +267,8 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  flex: 1;
+  width: 100%;
+  height: 100%;
   padding-top: 16px;
 }
 
@@ -273,14 +276,16 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   align-items: center;
-  flex: 2;
+  width: 100%;
+  height: 100%;
   padding: 0 8px;
 }
 
 .side-panel-right {
   display: flex;
   flex-direction: column;
-  flex: 1;
+  width: 100%;
+  height: 100%;
   padding-top: 16px;
 }
 
