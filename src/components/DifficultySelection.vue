@@ -19,13 +19,25 @@ export default defineComponent({
 </script>
 
 <template>
-  <select @change="handleChange" ref="difficultyRef">
-    <option>Easy</option>
-    <option selected>Normal</option>
-  </select>
+  <div class="flex">
+    <span>Difficulty:</span>
+    <select @change="handleChange" ref="difficultyRef">
+      <option>Easy</option>
+      <option selected>Normal</option>
+    </select>
+  </div>
 </template>
 
 <style scoped>
+div {
+  padding-top: 16px;
+  align-items: center;
+}
+
+span {
+  padding-right: 4px;
+}
+
 select {
   height: 32px;
 }

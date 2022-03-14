@@ -40,7 +40,11 @@ export default defineComponent({
 
 <template>
   <div>
-    <div v-for="generation in generations" :key="generation.id">
+    <div
+      v-for="generation in generations"
+      class="generation"
+      :key="generation.id"
+    >
       <label :for="`gen${generation.id}`">{{ generation.name }}</label>
 
       <input
@@ -53,3 +57,16 @@ export default defineComponent({
     </div>
   </div>
 </template>
+
+<style scoped>
+.generation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+label {
+  padding-right: 4px;
+}
+</style>

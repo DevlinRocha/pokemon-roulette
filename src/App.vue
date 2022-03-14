@@ -174,7 +174,7 @@ export default defineComponent({
         :generations="generations"
       />
 
-      <div class="container">
+      <div class="center-panel container">
         <Pokemon
           :pokemon="pokemon"
           :difficulty="difficulty"
@@ -225,5 +225,13 @@ export default defineComponent({
 
 .flex {
   display: flex;
+}
+
+.center-panel {
+  padding: 0 8px;
+}
+
+button {
+  margin-top: 8px;
 }
 </style>
