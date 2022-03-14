@@ -72,6 +72,7 @@ export default defineComponent({
       inputVal: "",
       isGuessCorrect: false,
       difficulty: "normal",
+      score: 0,
     };
   },
 
@@ -106,7 +107,7 @@ export default defineComponent({
 
       const pokemonData = await this.getPokemon(pokemonId);
 
-      this.reset();
+      this.isGuessCorrect ? this.nextPokemon() : this.reset();
 
       this.pokemon = {
         name: pokemonData.species.name.toLowerCase(),
@@ -128,16 +129,24 @@ export default defineComponent({
     correctGuess() {
       this.isGuessCorrect = true;
       this.title = `It's ${this.capitalize(this.pokemon.name)}!`;
+      this.score = this.score + 1;
     },
 
     capitalize(str: string) {
       return str.charAt(0).toUpperCase() + str.slice(1);
     },
 
+    nextPokemon() {
+      this.inputVal = "";
+      this.isGuessCorrect = false;
+      this.title = "Who's that Pokémon?";
+    },
+
     reset() {
       this.inputVal = "";
       this.isGuessCorrect = false;
       this.title = "Who's that Pokémon?";
+      this.score = 0;
     },
   },
 
@@ -174,10 +183,16 @@ export default defineComponent({
 
         <input @input="handleInput" v-model="inputVal" type="text" />
 
-        <button @click="setPokemon">Reset</button>
+        <button @click="setPokemon">
+          {{ isGuessCorrect ? "Next Pokémon!" : "Give Up" }}
+        </button>
       </div>
 
-      <DifficultySelection v-model="difficulty" />
+      <div class="container">
+        <div>Current Score: {{ score }}</div>
+
+        <DifficultySelection v-model="difficulty" />
+      </div>
     </div>
   </div>
 </template>
