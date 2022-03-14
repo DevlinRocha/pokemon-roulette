@@ -182,7 +182,12 @@ export default defineComponent({
           :isGuessCorrect="isGuessCorrect"
         />
 
-        <input @input="handleInput" v-model="inputVal" type="text" />
+        <input
+          @input="handleInput"
+          v-model="inputVal"
+          :disabled="isGuessCorrect"
+          autocorrect="false"
+        />
 
         <button @click="isGuessCorrect ? setPokemon(false) : setPokemon(true)">
           {{ isGuessCorrect ? "Next Pokémon!" : "Give Up" }}
