@@ -132,6 +132,7 @@ export default defineComponent({
       this.isGuessCorrect = true;
       this.title = `It's ${this.capitalize(this.pokemon.name)}!`;
       this.score = this.score + 1;
+      this.focusButton();
     },
 
     capitalize(str: string) {
@@ -142,6 +143,11 @@ export default defineComponent({
       const input = this.$refs.inputRef as HTMLInputElement;
       input.disabled = false;
       input.focus();
+    },
+
+    focusButton() {
+      const button = this.$refs.buttonRef as HTMLButtonElement;
+      button.focus();
     },
 
     nextPokemon() {
@@ -190,17 +196,24 @@ export default defineComponent({
           :isGuessCorrect="isGuessCorrect"
         />
 
-        <input
-          @input="handleInput"
-          v-model="inputVal"
-          ref="inputRef"
-          :disabled="isGuessCorrect"
-          autocorrect="false"
-        />
+        <form
+          class="column-container"
+          @submit.prevent="
+            isGuessCorrect ? setPokemon(false) : setPokemon(true)
+          "
+        >
+          <input
+            @input="handleInput"
+            v-model="inputVal"
+            ref="inputRef"
+            :disabled="isGuessCorrect"
+            autocorrect="false"
+          />
 
-        <button @click="isGuessCorrect ? setPokemon(false) : setPokemon(true)">
-          {{ isGuessCorrect ? "Next Pokémon!" : "Give Up" }}
-        </button>
+          <button ref="buttonRef">
+            {{ isGuessCorrect ? "Next Pokémon!" : "Give Up" }}
+          </button>
+        </form>
       </div>
 
       <div class="side-panel-right">
