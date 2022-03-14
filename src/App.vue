@@ -183,7 +183,7 @@ export default defineComponent({
 
         <input @input="handleInput" v-model="inputVal" type="text" />
 
-        <button @click="setPokemon(false)">
+        <button @click="isGuessCorrect ? setPokemon(false) : setPokemon(true)">
           {{ isGuessCorrect ? "Next Pokémon!" : "Give Up" }}
         </button>
       </div>
