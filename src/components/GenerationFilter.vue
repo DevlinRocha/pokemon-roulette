@@ -63,7 +63,8 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
+  min-width: max-content;
+  width: 100px;
 }
 
 label {

@@ -29,7 +29,8 @@ export default defineComponent({
 </template>
 
 <style scoped>
-div {
+.flex {
+  display: flex;
   padding-top: 16px;
   align-items: center;
 }

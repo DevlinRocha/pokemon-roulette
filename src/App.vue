@@ -165,16 +165,17 @@ export default defineComponent({
 </script>
 
 <template>
-  <div class="container">
+  <div class="column-container">
     <h1>{{ title }}</h1>
 
-    <div class="flex">
+    <div class="container">
       <GenerationFilter
         v-model="selectedGenerationIds"
         :generations="generations"
+        class="side-panel-left"
       />
 
-      <div class="center-panel container">
+      <div class="center-panel">
         <Pokemon
           :pokemon="pokemon"
           :difficulty="difficulty"
@@ -188,7 +189,7 @@ export default defineComponent({
         </button>
       </div>
 
-      <div class="container">
+      <div class="side-panel-right">
         <div>Current Score: {{ score }}</div>
 
         <DifficultySelection v-model="difficulty" @change="setPokemon(true)" />
@@ -210,28 +211,58 @@ export default defineComponent({
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
-  padding-top: 16px;
+  padding: 16px;
   min-width: 100vw;
   min-height: 100vh;
+}
+</style>
+
+<style scoped>
+.column-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
 }
 
 .container {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
 }
 
-.flex {
+.side-panel-left {
   display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex: 1;
+  padding-top: 16px;
 }
 
 .center-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 2;
   padding: 0 8px;
+}
+
+.side-panel-right {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding-top: 16px;
+}
+
+input {
+  padding: 4px;
 }
 
 button {
   margin-top: 8px;
+  padding: 4px;
 }
 </style>
