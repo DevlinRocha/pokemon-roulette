@@ -113,6 +113,8 @@ export default defineComponent({
         name: pokemonData.species.name.toLowerCase(),
         img: pokemonData.sprites.front_default,
       };
+
+      this.focusInput();
     },
 
     getRandomId(min: number, max: number) {
@@ -134,6 +136,12 @@ export default defineComponent({
 
     capitalize(str: string) {
       return str.charAt(0).toUpperCase() + str.slice(1);
+    },
+
+    focusInput() {
+      const input = this.$refs.inputRef as HTMLInputElement;
+      input.disabled = false;
+      input.focus();
     },
 
     nextPokemon() {
@@ -185,6 +193,7 @@ export default defineComponent({
         <input
           @input="handleInput"
           v-model="inputVal"
+          ref="inputRef"
           :disabled="isGuessCorrect"
           autocorrect="false"
         />
