@@ -17,7 +17,7 @@ export interface GenerationData {
 
 export default defineComponent({
   mounted() {
-    this.setPokemon();
+    this.setPokemon(true);
   },
 
   data() {
@@ -87,7 +87,7 @@ export default defineComponent({
       return await response.json();
     },
 
-    async setPokemon() {
+    async setPokemon(reset: boolean) {
       let validPokemonId = false;
       let pokemonId: number;
 
@@ -107,7 +107,7 @@ export default defineComponent({
 
       const pokemonData = await this.getPokemon(pokemonId);
 
-      this.isGuessCorrect ? this.nextPokemon() : this.reset();
+      reset ? this.reset() : this.nextPokemon();
 
       this.pokemon = {
         name: pokemonData.species.name.toLowerCase(),
@@ -183,7 +183,7 @@ export default defineComponent({
 
         <input @input="handleInput" v-model="inputVal" type="text" />
 
-        <button @click="setPokemon">
+        <button @click="setPokemon(false)">
           {{ isGuessCorrect ? "Next Pokémon!" : "Give Up" }}
         </button>
       </div>
@@ -191,7 +191,7 @@ export default defineComponent({
       <div class="container">
         <div>Current Score: {{ score }}</div>
 
-        <DifficultySelection v-model="difficulty" />
+        <DifficultySelection v-model="difficulty" @change="setPokemon(true)" />
       </div>
     </div>
   </div>
