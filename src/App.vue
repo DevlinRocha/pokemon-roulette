@@ -253,14 +253,14 @@ export default defineComponent({
   flex-direction: column;
   align-items: center;
   width: 100%;
-  height: 100%;
+  height: auto;
 }
 
 .container {
   display: flex;
   justify-content: center;
   width: 100%;
-  height: 100%;
+  height: auto;
 }
 
 .side-panel-left {
@@ -268,7 +268,7 @@ export default defineComponent({
   flex-direction: column;
   align-items: flex-end;
   width: 100%;
-  height: 100%;
+  height: auto;
   padding-top: 16px;
 }
 
@@ -277,24 +277,24 @@ export default defineComponent({
   flex-direction: column;
   align-items: center;
   width: 100%;
-  height: 100%;
-  padding: 0 8px;
+  height: auto;
+  padding: 0 16px;
 }
 
 .side-panel-right {
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 100%;
+  height: auto;
   padding-top: 16px;
 }
 
 input {
-  padding: 4px;
+  margin: 16px 0;
+  padding: 8px;
 }
 
 button {
-  margin-top: 8px;
-  padding: 4px;
+  padding: 8px;
 }
 </style>

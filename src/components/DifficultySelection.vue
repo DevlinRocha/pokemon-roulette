@@ -40,6 +40,6 @@ span {
 }
 
 select {
-  height: 32px;
+  padding: 4px 0;
 }
 </style>

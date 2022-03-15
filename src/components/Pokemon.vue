@@ -22,13 +22,15 @@ export default defineComponent({
       isGuessCorrect === false && difficulty === 'normal' ? 'unknown' : '',
     ]"
     :src="pokemon.img"
+    draggable="false"
   />
 </template>
 
 <style scoped>
 img {
   width: 100%;
-  height: 100%;
+  height: auto;
+  max-width: 512px;
   object-fit: contain;
 }
 
