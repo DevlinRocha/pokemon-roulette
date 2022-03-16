@@ -202,22 +202,26 @@ export default defineComponent({
             isGuessCorrect ? setPokemon(false) : setPokemon(true)
           "
         >
+          <div :class="isGuessCorrect ? '' : 'hidden'">Good job!</div>
           <input
             @input="handleInput"
             v-model="inputVal"
             ref="inputRef"
             :disabled="isGuessCorrect"
             autocorrect="false"
+            placeholder="Guess Pokémon..."
           />
 
-          <button ref="buttonRef">
+          <button :class="isGuessCorrect ? 'correct' : ''" ref="buttonRef">
             {{ isGuessCorrect ? "Next Pokémon!" : "Give Up" }}
           </button>
         </form>
       </div>
 
       <div class="side-panel-right">
-        <div>Current Score: {{ score }}</div>
+        <div>
+          Current Score: {{ score }} <span v-show="isGuessCorrect">+1</span>
+        </div>
 
         <DifficultySelection v-model="difficulty" @change="setPokemon(true)" />
       </div>
@@ -226,6 +230,13 @@ export default defineComponent({
 </template>
 
 <style>
+:root {
+  --primary-color: #e6bc2f;
+  --secondary-color: #1b53ba;
+  --confirm-color: #4dad5b;
+  --select-color: #30a7d7;
+}
+
 *,
 *::before,
 *::after {
@@ -244,6 +255,10 @@ export default defineComponent({
   min-height: 100vh;
   width: 100vw;
   height: 100vh;
+}
+
+.hidden {
+  visibility: hidden;
 }
 </style>
 
@@ -292,9 +307,49 @@ export default defineComponent({
 input {
   margin: 16px 0;
   padding: 8px;
+  font-weight: bold;
+  border: 2px solid var(--primary-color);
+  border-radius: 4px;
+}
+
+input:focus {
+  border: 2px solid var(--select-color);
+  outline: 1px solid var(--select-color);
+}
+
+input:disabled {
+  background-color: var(--confirm-color);
+  color: #fff;
+  border: 2px solid var(--confirm-color);
 }
 
 button {
   padding: 8px;
+  background-color: #fff;
+  border: 2px solid var(--primary-color);
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+}
+
+button:focus,
+button:hover {
+  color: var(--secondary-color);
+}
+
+.correct {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+.correct:focus,
+.correct:hover {
+  outline: 2px solid var(--select-color);
+  color: #fff;
+}
+
+span {
+  color: var(--confirm-color);
 }
 </style>
