@@ -5,6 +5,7 @@ import GenerationFilter from "./components/GenerationFilter.vue";
 import DifficultySelection from "./components/DifficultySelection.vue";
 
 export interface PokemonData {
+  id: number;
   name: string;
   img: string;
 }
@@ -87,6 +88,15 @@ export default defineComponent({
       return await response.json();
     },
 
+    async getPokemonName(id: number) {
+      const response = await fetch(
+        `https://pokeapi.co/api/v2/pokemon-species/${id}`
+      );
+      const species = await response.json();
+      // English: 7
+      return species.names[7].name;
+    },
+
     async setPokemon(reset: boolean) {
       let validPokemonId = false;
       let pokemonId: number;
@@ -110,7 +120,8 @@ export default defineComponent({
       reset ? this.reset() : this.nextPokemon();
 
       this.pokemon = {
-        name: pokemonData.species.name.toLowerCase(),
+        id: pokemonId,
+        name: await this.getPokemonName(pokemonId),
         img: pokemonData.sprites.front_default,
       };
 
@@ -128,9 +139,9 @@ export default defineComponent({
         this.correctGuess();
     },
 
-    correctGuess() {
+    async correctGuess() {
       this.isGuessCorrect = true;
-      this.title = `It's ${this.capitalize(this.pokemon.name)}!`;
+      this.title = `It's ${await this.getPokemonName(this.pokemon.id)}!`;
       this.score = this.score + 1;
       this.focusButton();
     },
