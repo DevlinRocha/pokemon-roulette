@@ -75,6 +75,7 @@ export default defineComponent({
       hasGivenUp: false,
       difficulty: "normal",
       score: 0,
+      prevScore: 0,
     };
   },
 
@@ -177,6 +178,7 @@ export default defineComponent({
       this.isGuessCorrect = false;
       this.hasGivenUp = true;
       this.title = `It's ${this.pokemon.name}!`;
+      this.prevScore = this.score;
       this.score = 0;
       this.focusButton();
     },
@@ -243,7 +245,11 @@ export default defineComponent({
 
       <div class="side-panel-right">
         <div>
-          Current Score: {{ score }} <span v-show="isGuessCorrect">+1</span>
+          Current Score: {{ score }}
+          <span v-show="isGuessCorrect" class="correct">+1</span
+          ><span v-show="hasGivenUp && prevScore > 0" class="invalid"
+            >-{{ prevScore }}</span
+          >
         </div>
 
         <DifficultySelection v-model="difficulty" @change="setPokemon()" />
@@ -379,7 +385,11 @@ button.valid:hover {
   color: #fff;
 }
 
-span {
+span.correct {
   color: var(--confirm-color);
+}
+
+span.invalid {
+  color: var(--cancel-color);
 }
 </style>
