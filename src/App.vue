@@ -76,6 +76,8 @@ export default defineComponent({
       difficulty: "normal",
       score: 0,
       prevScore: 0,
+      highScore: 0,
+      newHighScore: false,
     };
   },
 
@@ -169,6 +171,7 @@ export default defineComponent({
       this.inputVal = "";
       this.isGuessCorrect = false;
       this.hasGivenUp = false;
+      this.newHighScore = false;
       this.title = "Who's that Pokémon?";
       this.focusInput();
     },
@@ -178,6 +181,8 @@ export default defineComponent({
       this.isGuessCorrect = false;
       this.hasGivenUp = true;
       this.title = `It's ${this.pokemon.name}!`;
+      if (this.score > this.highScore)
+        (this.newHighScore = true), (this.highScore = this.score);
       this.prevScore = this.score;
       this.score = 0;
       this.focusButton();
@@ -223,7 +228,8 @@ export default defineComponent({
             isGuessCorrect || hasGivenUp ? nextPokemon() : giveUp()
           "
         >
-          <div :class="isGuessCorrect ? '' : 'hidden'">Good job!</div>
+          <div :class="!isGuessCorrect && 'hidden'">Good job!</div>
+          <div :class="!newHighScore && 'hidden'">New high score!</div>
           <input
             @input="handleInput"
             v-model="inputVal"
@@ -250,6 +256,10 @@ export default defineComponent({
           ><span v-show="hasGivenUp && prevScore > 0" class="invalid"
             >-{{ prevScore }}</span
           >
+        </div>
+        <div>
+          High Score:
+          <span :class="newHighScore && 'correct'">{{ highScore }}</span>
         </div>
 
         <DifficultySelection v-model="difficulty" @change="setPokemon()" />
