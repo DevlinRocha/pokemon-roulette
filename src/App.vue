@@ -18,7 +18,7 @@ export interface GenerationData {
 
 export default defineComponent({
   mounted() {
-    this.setPokemon(true);
+    this.setPokemon();
   },
 
   data() {
@@ -72,6 +72,7 @@ export default defineComponent({
       selectedGenerationIds: [1, 2, 3, 4, 5, 6, 7, 8],
       inputVal: "",
       isGuessCorrect: false,
+      hasGivenUp: false,
       difficulty: "normal",
       score: 0,
     };
@@ -97,7 +98,7 @@ export default defineComponent({
       return species.names[7].name;
     },
 
-    async setPokemon(reset: boolean) {
+    async setPokemon() {
       let validPokemonId = false;
       let pokemonId: number;
 
@@ -117,15 +118,11 @@ export default defineComponent({
 
       const pokemonData = await this.getPokemon(pokemonId);
 
-      reset ? this.reset() : this.nextPokemon();
-
       this.pokemon = {
         id: pokemonId,
         name: await this.getPokemonName(pokemonId),
         img: pokemonData.sprites.front_default,
       };
-
-      this.focusInput();
     },
 
     getRandomId(min: number, max: number) {
@@ -166,17 +163,22 @@ export default defineComponent({
       button.focus();
     },
 
-    nextPokemon() {
+    async nextPokemon() {
+      await this.setPokemon();
       this.inputVal = "";
       this.isGuessCorrect = false;
+      this.hasGivenUp = false;
       this.title = "Who's that Pokémon?";
+      this.focusInput();
     },
 
-    reset() {
-      this.inputVal = "";
+    giveUp() {
+      this.inputVal = this.pokemon.name;
       this.isGuessCorrect = false;
-      this.title = "Who's that Pokémon?";
+      this.hasGivenUp = true;
+      this.title = `It's ${this.pokemon.name}!`;
       this.score = 0;
+      this.focusButton();
     },
   },
 
@@ -210,12 +212,13 @@ export default defineComponent({
           :pokemon="pokemon"
           :difficulty="difficulty"
           :isGuessCorrect="isGuessCorrect"
+          :hasGivenUp="hasGivenUp"
         />
 
         <form
           class="column-container"
           @submit.prevent="
-            isGuessCorrect ? setPokemon(false) : setPokemon(true)
+            isGuessCorrect || hasGivenUp ? nextPokemon() : giveUp()
           "
         >
           <div :class="isGuessCorrect ? '' : 'hidden'">Good job!</div>
@@ -223,13 +226,17 @@ export default defineComponent({
             @input="handleInput"
             v-model="inputVal"
             ref="inputRef"
-            :disabled="isGuessCorrect"
+            :disabled="isGuessCorrect || hasGivenUp"
+            :class="(hasGivenUp && 'invalid') || (isGuessCorrect && 'correct')"
             autocorrect="false"
             placeholder="Guess Pokémon..."
           />
 
-          <button :class="isGuessCorrect ? 'correct' : ''" ref="buttonRef">
-            {{ isGuessCorrect ? "Next Pokémon!" : "Give Up" }}
+          <button
+            :class="(isGuessCorrect || hasGivenUp) && 'valid'"
+            ref="buttonRef"
+          >
+            {{ isGuessCorrect || hasGivenUp ? "Next Pokémon!" : "Give Up" }}
           </button>
         </form>
       </div>
@@ -239,7 +246,7 @@ export default defineComponent({
           Current Score: {{ score }} <span v-show="isGuessCorrect">+1</span>
         </div>
 
-        <DifficultySelection v-model="difficulty" @change="setPokemon(true)" />
+        <DifficultySelection v-model="difficulty" @change="setPokemon()" />
       </div>
     </div>
   </div>
@@ -249,8 +256,9 @@ export default defineComponent({
 :root {
   --primary-color: #e6bc2f;
   --secondary-color: #1b53ba;
-  --confirm-color: #4dad5b;
   --select-color: #30a7d7;
+  --confirm-color: #4dad5b;
+  --cancel-color: #e3350d;
 }
 
 *,
@@ -333,10 +341,16 @@ input:focus {
   outline: 1px solid var(--select-color);
 }
 
-input:disabled {
+input.correct {
   background-color: var(--confirm-color);
   color: #fff;
   border: 2px solid var(--confirm-color);
+}
+
+input.invalid {
+  background-color: var(--cancel-color);
+  color: #fff;
+  border: 2px solid var(--cancel-color);
 }
 
 button {
@@ -354,13 +368,13 @@ button:hover {
   color: var(--secondary-color);
 }
 
-.correct {
+button.valid {
   background-color: var(--primary-color);
   color: #fff;
 }
 
-.correct:focus,
-.correct:hover {
+button.valid:focus,
+button.valid:hover {
   outline: 2px solid var(--select-color);
   color: #fff;
 }
