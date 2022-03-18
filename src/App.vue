@@ -228,8 +228,13 @@ export default defineComponent({
             isGuessCorrect || hasGivenUp ? nextPokemon() : giveUp()
           "
         >
-          <div :class="!isGuessCorrect && 'hidden'">Good job!</div>
-          <div :class="!newHighScore && 'hidden'">New high score!</div>
+          <span :class="!isGuessCorrect && !newHighScore && 'hidden'">
+            {{
+              (isGuessCorrect && "Good job!") ||
+              (newHighScore && "New high score!")
+            }}
+          </span>
+
           <input
             @input="handleInput"
             v-model="inputVal"
