@@ -76,7 +76,8 @@ export default defineComponent({
       difficulty: "normal",
       score: 0,
       prevScore: 0,
-      highScore: 0,
+      easyHighScore: 0,
+      normalHighScore: 0,
       newHighScore: false,
     };
   },
@@ -181,11 +182,35 @@ export default defineComponent({
       this.isGuessCorrect = false;
       this.hasGivenUp = true;
       this.title = `It's ${this.pokemon.name}!`;
-      if (this.score > this.highScore)
-        (this.newHighScore = true), (this.highScore = this.score);
+      this.changeScore();
       this.prevScore = this.score;
       this.score = 0;
       this.focusButton();
+    },
+
+    changeScore() {
+      switch (this.difficulty) {
+        case "easy":
+          if (this.score > this.easyHighScore) this.easyHighScore = this.score;
+          break;
+        case "normal":
+          if (this.score > this.normalHighScore)
+            this.normalHighScore = this.score;
+        default:
+          if (this.score > this.normalHighScore)
+            this.normalHighScore = this.score;
+      }
+    },
+
+    getHighScore() {
+      switch (this.difficulty) {
+        case "easy":
+          return this.easyHighScore;
+        case "normal":
+          return this.normalHighScore;
+        default:
+          return this.normalHighScore;
+      }
     },
   },
 
@@ -264,7 +289,7 @@ export default defineComponent({
         </div>
         <div>
           High Score:
-          <span :class="newHighScore && 'correct'">{{ highScore }}</span>
+          <span :class="newHighScore && 'correct'">{{ getHighScore() }}</span>
         </div>
 
         <DifficultySelection v-model="difficulty" @change="setPokemon()" />
