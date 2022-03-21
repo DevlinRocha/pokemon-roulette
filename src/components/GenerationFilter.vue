@@ -24,9 +24,10 @@ export default defineComponent({
     },
 
     toggleGeneration(id: number) {
-      const inputs = this.$refs.inputRef as HTMLInputElement[];
-      if (!this.confirmToggle())
+      if (!this.confirmToggle()) {
+        const inputs = this.$refs.inputRef as HTMLInputElement[];
         return (inputs[id - 1].checked = !inputs[id - 1].checked);
+      }
 
       this.$emit(
         "update:modelValue",

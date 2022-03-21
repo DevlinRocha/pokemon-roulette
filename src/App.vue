@@ -234,9 +234,9 @@ export default defineComponent({
 
     <div class="container">
       <GenerationFilter
-        v-model="selectedGenerationIds"
         :generations="generations"
         :score="score"
+        v-model="selectedGenerationIds"
         @toggleGeneration="giveUp"
         class="side-panel-left"
       />
@@ -294,7 +294,11 @@ export default defineComponent({
           <span :class="newHighScore && 'correct'">{{ getHighScore() }}</span>
         </div>
 
-        <DifficultySelection v-model="difficulty" @change="setPokemon()" />
+        <DifficultySelection
+          :score="score"
+          v-model="difficulty"
+          @changeDifficulty="giveUp"
+        />
       </div>
     </div>
   </div>

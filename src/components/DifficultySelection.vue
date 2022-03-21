@@ -7,12 +7,27 @@ export default defineComponent({
       type: String,
       required: true,
     },
+    score: {
+      type: Number,
+      required: true,
+    },
   },
 
   methods: {
     handleChange() {
       const difficulty = this.$refs.difficultyRef as HTMLInputElement;
-      this.$emit("update:modelValue", difficulty.value.toLowerCase());
+      if (!this.confirmChange()) return (difficulty.value = this.modelValue);
+
+      this.$emit("update:modelValue", difficulty.value);
+      this.$emit("changeDifficulty");
+    },
+
+    confirmChange() {
+      if (this.score <= 0) return true;
+
+      return confirm(
+        "Changing the difficulty will reset your current score, are you sure?"
+      );
     },
   },
 });
@@ -22,8 +37,8 @@ export default defineComponent({
   <div class="flex">
     <span>Difficulty:</span>
     <select @change="handleChange" ref="difficultyRef">
-      <option>Easy</option>
-      <option selected>Normal</option>
+      <option value="easy">Easy</option>
+      <option value="normal" selected>Normal</option>
     </select>
   </div>
 </template>
