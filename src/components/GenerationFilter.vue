@@ -12,6 +12,10 @@ export default defineComponent({
       type: Array as PropType<GenerationData[]>,
       required: true,
     },
+    score: {
+      type: Number,
+      required: true,
+    },
   },
 
   methods: {
@@ -20,14 +24,25 @@ export default defineComponent({
     },
 
     toggleGeneration(id: number) {
-      this.isToggleValid(id)
-        ? this.$emit(
-            "update:modelValue",
-            !this.isChecked(id)
-              ? [...this.modelValue, id]
-              : this.modelValue.filter((number) => number !== id)
-          )
-        : null;
+      const inputs = this.$refs.inputRef as HTMLInputElement[];
+      if (!this.confirmToggle())
+        return (inputs[id - 1].checked = !inputs[id - 1].checked);
+
+      this.$emit(
+        "update:modelValue",
+        !this.isChecked(id)
+          ? [...this.modelValue, id]
+          : this.modelValue.filter((number) => number !== id)
+      );
+      this.$emit("toggleGeneration");
+    },
+
+    confirmToggle() {
+      if (this.score <= 0) return true;
+
+      return confirm(
+        "Changing Pokémon generations will reset your current score, are you sure?"
+      );
     },
 
     isToggleValid(id: number) {
@@ -53,6 +68,7 @@ export default defineComponent({
         type="checkbox"
         :disabled="!isToggleValid(generation.id)"
         @change="toggleGeneration(generation.id)"
+        ref="inputRef"
       />
     </div>
   </div>

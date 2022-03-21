@@ -236,6 +236,8 @@ export default defineComponent({
       <GenerationFilter
         v-model="selectedGenerationIds"
         :generations="generations"
+        :score="score"
+        @toggleGeneration="giveUp"
         class="side-panel-left"
       />
 
