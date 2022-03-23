@@ -18,7 +18,7 @@ export interface GenerationData {
 
 export default defineComponent({
   mounted() {
-    this.setPokemon();
+    this.nextPokemon();
   },
 
   data() {
