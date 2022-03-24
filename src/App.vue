@@ -79,6 +79,10 @@ export default defineComponent({
       easyHighScore: 0,
       normalHighScore: 0,
       newHighScore: false,
+      timer: {} as NodeJS.Timeout,
+      time: null as string | null,
+      prevTime: null as string | null,
+      bestTime: null as string | null,
     };
   },
 
@@ -141,6 +145,7 @@ export default defineComponent({
     },
 
     async correctGuess() {
+      this.stopTimer();
       this.isGuessCorrect = true;
       this.title = `It's ${await this.getPokemonName(this.pokemon.id)}!`;
       this.score = this.score + 1;
@@ -175,6 +180,7 @@ export default defineComponent({
       this.newHighScore = false;
       this.title = "Who's that Pokémon?";
       this.focusInput();
+      this.startTimer();
     },
 
     giveUp() {
@@ -211,6 +217,26 @@ export default defineComponent({
         default:
           return this.normalHighScore;
       }
+    },
+
+    startTimer() {
+      clearInterval(this.timer);
+      const start = new Date().getTime();
+
+      this.timer = setInterval(() => {
+        return (this.time = String((Date.now() - start) / 1000));
+      }, 10);
+    },
+
+    stopTimer() {
+      clearInterval(this.timer);
+      this.prevTime = this.time;
+
+      if (
+        this.bestTime === null ||
+        Number(this.prevTime) < Number(this.bestTime)
+      )
+        this.bestTime = this.prevTime;
     },
   },
 
