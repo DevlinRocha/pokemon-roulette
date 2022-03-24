@@ -80,9 +80,11 @@ export default defineComponent({
       normalHighScore: 0,
       newHighScore: false,
       timer: {} as NodeJS.Timeout,
-      time: null as string | null,
-      prevTime: null as string | null,
-      bestTime: null as string | null,
+      time: "",
+      prevTime: "",
+      bestTime: "",
+      bestPokemon: "",
+      newBestTime: false,
     };
   },
 
@@ -145,8 +147,8 @@ export default defineComponent({
     },
 
     async correctGuess() {
-      this.stopTimer();
       this.isGuessCorrect = true;
+      this.stopTimer();
       this.title = `It's ${await this.getPokemonName(this.pokemon.id)}!`;
       this.score = this.score + 1;
       this.focusButton();
@@ -178,12 +180,14 @@ export default defineComponent({
       this.isGuessCorrect = false;
       this.hasGivenUp = false;
       this.newHighScore = false;
+      this.newBestTime = false;
       this.title = "Who's that Pokémon?";
       this.focusInput();
       this.startTimer();
     },
 
     giveUp() {
+      this.stopTimer();
       this.inputVal = this.pokemon.name;
       this.isGuessCorrect = false;
       this.hasGivenUp = true;
@@ -191,6 +195,8 @@ export default defineComponent({
       this.changeScore();
       this.prevScore = this.score;
       this.score = 0;
+      this.prevTime = "";
+      this.time = "";
       this.focusButton();
     },
 
@@ -230,13 +236,16 @@ export default defineComponent({
 
     stopTimer() {
       clearInterval(this.timer);
+
+      if (!this.isGuessCorrect) return;
+
       this.prevTime = this.time;
 
-      if (
-        this.bestTime === null ||
-        Number(this.prevTime) < Number(this.bestTime)
-      )
-        this.bestTime = this.prevTime;
+      if (this.bestTime !== "" && Number(this.prevTime) > Number(this.bestTime))
+        return;
+      this.bestTime = this.prevTime;
+      this.newBestTime = true;
+      this.bestPokemon = this.pokemon.name;
     },
   },
 
@@ -281,8 +290,13 @@ export default defineComponent({
             isGuessCorrect || hasGivenUp ? nextPokemon() : giveUp()
           "
         >
-          <span :class="!isGuessCorrect && !newHighScore && 'hidden'">
+          <span
+            :class="
+              !isGuessCorrect && !newHighScore && !newBestTime && 'hidden'
+            "
+          >
             {{
+              (newBestTime && "New best time!") ||
               (isGuessCorrect && "Good job!") ||
               (newHighScore && "New high score!")
             }}
@@ -318,6 +332,14 @@ export default defineComponent({
         <div>
           High Score:
           <span :class="newHighScore && 'correct'">{{ getHighScore() }}</span>
+        </div>
+
+        <div>Previous Time: {{ prevTime }}</div>
+        <div>
+          Best Time:
+          <span :class="newBestTime && 'correct'"
+            >{{ bestTime }} {{ bestPokemon && `(${bestPokemon})` }}</span
+          >
         </div>
 
         <DifficultySelection
