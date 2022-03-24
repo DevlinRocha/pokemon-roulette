@@ -79,7 +79,7 @@ export default defineComponent({
       easyHighScore: 0,
       normalHighScore: 0,
       newHighScore: false,
-      timer: {} as NodeJS.Timeout,
+      timer: 0,
       time: "",
       prevTime: "",
       bestEasyTime: "",
@@ -282,9 +282,11 @@ export default defineComponent({
       clearInterval(this.timer);
       const start = new Date().getTime();
 
-      this.timer = setInterval(() => {
-        return (this.time = String((Date.now() - start) / 1000));
-      }, 10);
+      this.timer = Number(
+        setInterval(() => {
+          return (this.time = String((Date.now() - start) / 1000));
+        }, 10)
+      );
     },
 
     stopTimer() {
