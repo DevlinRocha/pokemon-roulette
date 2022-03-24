@@ -82,8 +82,10 @@ export default defineComponent({
       timer: {} as NodeJS.Timeout,
       time: "",
       prevTime: "",
-      bestTime: "",
-      bestPokemon: "",
+      bestEasyTime: "",
+      bestNormalTime: "",
+      bestEasyPokemon: "",
+      bestNormalPokemon: "",
       newBestTime: false,
     };
   },
@@ -225,6 +227,57 @@ export default defineComponent({
       }
     },
 
+    changeTime() {
+      switch (this.difficulty) {
+        case "easy":
+          if (
+            this.bestEasyTime !== "" &&
+            Number(this.prevTime) > Number(this.bestEasyTime)
+          )
+            return;
+          this.bestEasyTime = this.prevTime;
+          this.bestEasyPokemon = this.pokemon.name;
+          this.newBestTime = true;
+          break;
+        case "normal":
+          if (
+            this.bestNormalTime !== "" &&
+            Number(this.prevTime) > Number(this.bestNormalTime)
+          )
+            return;
+          this.bestNormalTime = this.prevTime;
+          this.bestNormalPokemon = this.pokemon.name;
+          this.newBestTime = true;
+          break;
+        default:
+          if (
+            this.bestNormalTime !== "" &&
+            Number(this.prevTime) > Number(this.bestNormalTime)
+          )
+            return;
+          this.bestNormalTime = this.prevTime;
+          this.bestNormalPokemon = this.pokemon.name;
+          this.newBestTime = true;
+      }
+    },
+
+    getTime() {
+      switch (this.difficulty) {
+        case "easy":
+          return `${this.bestEasyTime} ${
+            this.bestEasyPokemon && `(${this.bestEasyPokemon})`
+          }`;
+        case "normal":
+          return `${this.bestNormalTime} ${
+            this.bestNormalPokemon && `(${this.bestNormalPokemon})`
+          }`;
+        default:
+          return `${this.bestEasyTime} ${
+            this.bestEasyPokemon && `(${this.bestEasyPokemon})`
+          }`;
+      }
+    },
+
     startTimer() {
       clearInterval(this.timer);
       const start = new Date().getTime();
@@ -240,12 +293,7 @@ export default defineComponent({
       if (!this.isGuessCorrect) return;
 
       this.prevTime = this.time;
-
-      if (this.bestTime !== "" && Number(this.prevTime) > Number(this.bestTime))
-        return;
-      this.bestTime = this.prevTime;
-      this.newBestTime = true;
-      this.bestPokemon = this.pokemon.name;
+      this.changeTime();
     },
   },
 
@@ -337,9 +385,7 @@ export default defineComponent({
         <div>Previous Time: {{ prevTime }}</div>
         <div>
           Best Time:
-          <span :class="newBestTime && 'correct'"
-            >{{ bestTime }} {{ bestPokemon && `(${bestPokemon})` }}</span
-          >
+          <span :class="newBestTime && 'correct'">{{ getTime() }}</span>
         </div>
 
         <DifficultySelection
