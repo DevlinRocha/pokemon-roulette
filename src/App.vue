@@ -3,6 +3,7 @@ import { defineComponent } from "vue";
 import Pokemon from "./components/Pokemon.vue";
 import GenerationFilter from "./components/GenerationFilter.vue";
 import DifficultySelection from "./components/DifficultySelection.vue";
+import AnswerForm from "./components/AnswerForm.vue";
 
 export interface PokemonData {
   id: number;
@@ -141,13 +142,6 @@ export default defineComponent({
       return Math.floor(Math.random() * (max + 1 - min)) + min;
     },
 
-    handleInput() {
-      this.inputVal = this.capitalize(this.inputVal);
-
-      if (this.inputVal.toLowerCase() === this.pokemon.name.toLowerCase())
-        this.correctGuess();
-    },
-
     async correctGuess() {
       this.isGuessCorrect = true;
       this.stopTimer();
@@ -156,24 +150,15 @@ export default defineComponent({
       this.focusButton();
     },
 
-    capitalize(str: string) {
-      return str
-        .split(" ")
-        .map(
-          (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-        )
-        .join(" ");
-    },
-
     focusInput() {
-      const input = this.$refs.inputRef as HTMLInputElement;
-      input.disabled = false;
-      input.focus();
+      const answerFormRef = this.$refs.answerFormRef as any;
+      answerFormRef.$refs.inputRef.disabled = false;
+      answerFormRef.$refs.inputRef.focus();
     },
 
     focusButton() {
-      const button = this.$refs.buttonRef as HTMLButtonElement;
-      button.focus();
+      const answerFormRef = this.$refs.answerFormRef as any;
+      answerFormRef.$refs.buttonRef.focus();
     },
 
     async nextPokemon() {
@@ -309,7 +294,7 @@ export default defineComponent({
       });
     },
   },
-  components: { Pokemon, GenerationFilter, DifficultySelection },
+  components: { Pokemon, GenerationFilter, DifficultySelection, AnswerForm },
 });
 </script>
 
@@ -334,41 +319,18 @@ export default defineComponent({
           :hasGivenUp="hasGivenUp"
         />
 
-        <form
-          class="column-container"
-          @submit.prevent="
-            isGuessCorrect || hasGivenUp ? nextPokemon() : giveUp()
-          "
-        >
-          <span
-            :class="
-              !isGuessCorrect && !newHighScore && !newBestTime && 'hidden'
-            "
-          >
-            {{
-              (newBestTime && "New best time!") ||
-              (isGuessCorrect && "Good job!") ||
-              (newHighScore && "New high score!")
-            }}
-          </span>
-
-          <input
-            @input="handleInput"
-            v-model="inputVal"
-            ref="inputRef"
-            :disabled="isGuessCorrect || hasGivenUp"
-            :class="(hasGivenUp && 'invalid') || (isGuessCorrect && 'correct')"
-            autocorrect="false"
-            placeholder="Guess Pokémon..."
-          />
-
-          <button
-            :class="(isGuessCorrect || hasGivenUp) && 'valid'"
-            ref="buttonRef"
-          >
-            {{ isGuessCorrect || hasGivenUp ? "Next Pokémon!" : "Give Up" }}
-          </button>
-        </form>
+        <AnswerForm
+          ref="answerFormRef"
+          :pokemon="pokemon"
+          :isGuessCorrect="isGuessCorrect"
+          :hasGivenUp="hasGivenUp"
+          :newHighScore="newHighScore"
+          :newBestTime="newBestTime"
+          v-model="inputVal"
+          @correctGuess="correctGuess"
+          @nextPokemon="nextPokemon"
+          @giveUp="giveUp"
+        />
       </div>
 
       <div class="side-panel-right">
@@ -474,57 +436,6 @@ export default defineComponent({
   width: 100%;
   height: auto;
   padding-top: 16px;
-}
-
-input {
-  margin: 16px 0;
-  padding: 8px;
-  font-weight: bold;
-  border: 2px solid var(--primary-color);
-  border-radius: 4px;
-}
-
-input:focus {
-  border: 2px solid var(--select-color);
-  outline: 1px solid var(--select-color);
-}
-
-input.correct {
-  background-color: var(--confirm-color);
-  color: #fff;
-  border: 2px solid var(--confirm-color);
-}
-
-input.invalid {
-  background-color: var(--cancel-color);
-  color: #fff;
-  border: 2px solid var(--cancel-color);
-}
-
-button {
-  padding: 8px;
-  background-color: #fff;
-  border: 2px solid var(--primary-color);
-  font-weight: bold;
-  cursor: pointer;
-  border: none;
-  border-radius: 4px;
-}
-
-button:focus,
-button:hover {
-  color: var(--secondary-color);
-}
-
-button.valid {
-  background-color: var(--primary-color);
-  color: #fff;
-}
-
-button.valid:focus,
-button.valid:hover {
-  outline: 2px solid var(--select-color);
-  color: #fff;
 }
 
 span.correct {
