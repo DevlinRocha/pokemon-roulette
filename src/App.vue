@@ -4,6 +4,7 @@ import Pokemon from "./components/Pokemon.vue";
 import GenerationFilter from "./components/GenerationFilter.vue";
 import DifficultySelection from "./components/DifficultySelection.vue";
 import AnswerForm from "./components/AnswerForm.vue";
+import Scoreboard from "./components/Scoreboard.vue";
 
 export interface PokemonData {
   id: number;
@@ -201,17 +202,6 @@ export default defineComponent({
       }
     },
 
-    getHighScore() {
-      switch (this.difficulty) {
-        case "easy":
-          return this.easyHighScore;
-        case "normal":
-          return this.normalHighScore;
-        default:
-          return this.normalHighScore;
-      }
-    },
-
     changeTime() {
       switch (this.difficulty) {
         case "easy":
@@ -294,7 +284,13 @@ export default defineComponent({
       });
     },
   },
-  components: { Pokemon, GenerationFilter, DifficultySelection, AnswerForm },
+  components: {
+    Pokemon,
+    GenerationFilter,
+    DifficultySelection,
+    AnswerForm,
+    Scoreboard,
+  },
 });
 </script>
 
@@ -334,24 +330,19 @@ export default defineComponent({
       </div>
 
       <div class="side-panel-right">
-        <div>
-          Current Score: {{ score }}
-          <span v-show="isGuessCorrect" class="correct">+1</span
-          ><span v-show="hasGivenUp && prevScore > 0" class="invalid"
-            >-{{ prevScore }}</span
-          >
-        </div>
-        <div>
-          High Score:
-          <span :class="newHighScore && 'correct'">{{ getHighScore() }}</span>
-        </div>
-
-        <div>Previous Time: {{ prevTime }}</div>
-        <div>
-          Best Time:
-          <span :class="newBestTime && 'correct'">{{ getTime() }}</span>
-        </div>
-
+        <Scoreboard
+          :difficulty="difficulty"
+          :score="score"
+          :isGuessCorrect="isGuessCorrect"
+          :hasGivenUp="hasGivenUp"
+          :prevScore="prevScore"
+          :newHighScore="newHighScore"
+          :prevTime="prevTime"
+          :newBestTime="newBestTime"
+          :easyHighScore="easyHighScore"
+          :normalHighScore="normalHighScore"
+          :getTime="getTime"
+        />
         <DifficultySelection
           :score="score"
           v-model="difficulty"
@@ -389,6 +380,14 @@ export default defineComponent({
   min-height: 100vh;
   width: 100vw;
   height: 100vh;
+}
+
+span.correct {
+  color: var(--confirm-color);
+}
+
+span.invalid {
+  color: var(--cancel-color);
 }
 
 .hidden {
@@ -436,13 +435,5 @@ export default defineComponent({
   width: 100%;
   height: auto;
   padding-top: 16px;
-}
-
-span.correct {
-  color: var(--confirm-color);
-}
-
-span.invalid {
-  color: var(--cancel-color);
 }
 </style>
