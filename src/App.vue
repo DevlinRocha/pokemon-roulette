@@ -291,6 +291,14 @@ export default defineComponent({
     },
   },
 
+  watch: {
+    difficulty(newVal, oldVal) {
+      if (newVal === oldVal) return;
+
+      this.giveUp();
+    },
+  },
+
   components: {
     Pokemon,
     GenerationFilter,
@@ -350,11 +358,7 @@ export default defineComponent({
           :normalHighScore="normalHighScore"
           :getTime="getTime"
         />
-        <DifficultySelection
-          :score="score"
-          v-model="difficulty"
-          @changeDifficulty="giveUp"
-        />
+        <DifficultySelection :score="score" v-model="difficulty" />
       </div>
     </div>
   </div>

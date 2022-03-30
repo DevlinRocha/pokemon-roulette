@@ -19,7 +19,6 @@ export default defineComponent({
       if (!this.confirmChange()) return (difficulty.value = this.modelValue);
 
       this.$emit("update:modelValue", difficulty.value);
-      this.$emit("changeDifficulty");
     },
 
     confirmChange() {
