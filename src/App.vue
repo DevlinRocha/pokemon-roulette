@@ -20,6 +20,7 @@ export interface GenerationData {
 
 export default defineComponent({
   mounted() {
+    this.selectAllGenerations();
     this.nextPokemon();
   },
 
@@ -71,7 +72,7 @@ export default defineComponent({
           range: [810, 905],
         },
       ] as GenerationData[],
-      selectedGenerationIds: [1, 2, 3, 4, 5, 6, 7, 8],
+      selectedGenerationIds: [] as number[],
       inputVal: "",
       isGuessCorrect: false,
       hasGivenUp: false,
@@ -93,6 +94,11 @@ export default defineComponent({
   },
 
   methods: {
+    selectAllGenerations() {
+      this.selectedGenerationIds = this.generations.map(
+        (generation) => generation.id
+      );
+    },
     async getPokemon(id: number) {
       if (id > this.maxPokedex)
         throw new Error(
