@@ -19,6 +19,12 @@ export default defineComponent({
   },
 
   methods: {
+    focusInput() {
+      const inputRef = this.$refs.inputRef as HTMLInputElement;
+      inputRef.disabled = false;
+      inputRef.focus();
+    },
+
     handleInput() {
       const input = this.$refs.inputRef as HTMLInputElement;
 

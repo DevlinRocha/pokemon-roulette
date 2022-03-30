@@ -159,8 +159,7 @@ export default defineComponent({
 
     focusInput() {
       const answerFormRef = this.$refs.answerFormRef as any;
-      answerFormRef.$refs.inputRef.disabled = false;
-      answerFormRef.$refs.inputRef.focus();
+      answerFormRef.focusInput();
     },
 
     focusButton() {
