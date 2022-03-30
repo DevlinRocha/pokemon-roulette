@@ -75,7 +75,7 @@ export default defineComponent({
       inputVal: "",
       isGuessCorrect: false,
       hasGivenUp: false,
-      difficulty: "normal",
+      difficulty: "normal" as "easy" | "normal",
       score: 0,
       prevScore: 0,
       easyHighScore: 0,
@@ -284,6 +284,7 @@ export default defineComponent({
       });
     },
   },
+
   components: {
     Pokemon,
     GenerationFilter,

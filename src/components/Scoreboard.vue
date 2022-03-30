@@ -1,10 +1,10 @@
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, PropType } from "vue";
 
 export default defineComponent({
   props: {
     difficulty: {
-      type: String,
+      type: String as PropType<"easy" | "normal">,
       required: true,
     },
     score: {
@@ -37,16 +37,9 @@ export default defineComponent({
     },
   },
 
-  methods: {
-    getHighScore() {
-      switch (this.difficulty) {
-        case "easy":
-          return this.easyHighScore;
-        case "normal":
-          return this.normalHighScore;
-        default:
-          return this.normalHighScore;
-      }
+  computed: {
+    highScore() {
+      return this[`${this.difficulty}HighScore`];
     },
   },
 });
@@ -62,7 +55,7 @@ export default defineComponent({
   </div>
   <div>
     High Score:
-    <span :class="newHighScore && 'correct'">{{ getHighScore() }}</span>
+    <span :class="newHighScore && 'correct'">{{ highScore }}</span>
   </div>
 
   <div>Previous Time: {{ prevTime }}</div>
