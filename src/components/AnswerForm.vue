@@ -1,7 +1,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
 import { capitalize } from "../utilities/functions";
-import { PokemonData } from "../App.vue";
+import { PokemonData } from "../utilities/interfaces";
 
 export default defineComponent({
   props: {

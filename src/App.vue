@@ -5,20 +5,13 @@ import GenerationFilter from "./components/GenerationFilter.vue";
 import DifficultySelection from "./components/DifficultySelection.vue";
 import AnswerForm from "./components/AnswerForm.vue";
 import Scoreboard from "./components/Scoreboard.vue";
+import {
+  DifficultyType,
+  GenerationData,
+  PokemonData,
+} from "./utilities/interfaces";
 import { PokemonClass } from "./utilities/classes";
 import { getRandomId } from "./utilities/functions";
-
-export interface PokemonData {
-  id: number;
-  name: string;
-  img: string;
-}
-
-export interface GenerationData {
-  id: number;
-  name: string;
-  range: [number, number];
-}
 
 export default defineComponent({
   mounted() {
@@ -78,7 +71,7 @@ export default defineComponent({
       inputVal: "",
       isGuessCorrect: false,
       hasGivenUp: false,
-      difficulty: "normal" as "easy" | "normal",
+      difficulty: "normal" as DifficultyType,
       score: 0,
       prevScore: 0,
       easyHighScore: 0,
@@ -257,6 +250,7 @@ export default defineComponent({
     },
 
     startTimer() {
+      // Get rid of interval, replace with time logic start Date.getTime - endTime
       clearInterval(this.timer);
       const start = new Date().getTime();
 

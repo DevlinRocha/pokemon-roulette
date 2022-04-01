@@ -1,10 +1,11 @@
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
+import { DifficultyType } from "../utilities/interfaces";
 
 export default defineComponent({
   props: {
     difficulty: {
-      type: String as PropType<"easy" | "normal">,
+      type: String as PropType<DifficultyType>,
       required: true,
     },
     score: {
