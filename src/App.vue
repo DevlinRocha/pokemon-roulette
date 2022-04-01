@@ -5,6 +5,7 @@ import GenerationFilter from "./components/GenerationFilter.vue";
 import DifficultySelection from "./components/DifficultySelection.vue";
 import AnswerForm from "./components/AnswerForm.vue";
 import Scoreboard from "./components/Scoreboard.vue";
+import { PokemonClass } from "./utilities/classes";
 
 export interface PokemonData {
   id: number;
@@ -138,11 +139,11 @@ export default defineComponent({
 
       const pokemonData = await this.getPokemon(pokemonId);
 
-      this.pokemon = {
-        id: pokemonId,
-        name: await this.getPokemonName(pokemonId),
-        img: pokemonData.sprites.front_default,
-      };
+      this.pokemon = new PokemonClass(
+        pokemonId,
+        await this.getPokemonName(pokemonId),
+        pokemonData.sprites.front_default
+      );
     },
 
     getRandomId(min: number, max: number) {
