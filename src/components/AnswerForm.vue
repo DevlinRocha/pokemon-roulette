@@ -1,5 +1,6 @@
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
+import { capitalize } from "../utilities/functions";
 import { PokemonData } from "../App.vue";
 
 export default defineComponent({
@@ -28,19 +29,10 @@ export default defineComponent({
     handleInput() {
       const input = this.$refs.inputRef as HTMLInputElement;
 
-      this.$emit("update:modelValue", this.capitalize(input.value));
+      this.$emit("update:modelValue", capitalize(input.value));
 
       if (input.value.toLowerCase() === this.pokemon.name.toLowerCase())
         this.$emit("correctGuess");
-    },
-
-    capitalize(str: string) {
-      return str
-        .split(" ")
-        .map(
-          (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-        )
-        .join(" ");
     },
   },
 });

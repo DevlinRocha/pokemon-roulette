@@ -6,6 +6,7 @@ import DifficultySelection from "./components/DifficultySelection.vue";
 import AnswerForm from "./components/AnswerForm.vue";
 import Scoreboard from "./components/Scoreboard.vue";
 import { PokemonClass } from "./utilities/classes";
+import { getRandomId } from "./utilities/functions";
 
 export interface PokemonData {
   id: number;
@@ -125,7 +126,7 @@ export default defineComponent({
 
       do {
         // Can change minPokedex and maxPokedex for further optimization
-        pokemonId = this.getRandomId(this.minPokedex, this.maxPokedex);
+        pokemonId = getRandomId(this.minPokedex, this.maxPokedex);
 
         validPokemonId = this.acceptedPokemonIdRanges.some(
           (range: [number, number]) =>
@@ -144,10 +145,6 @@ export default defineComponent({
         await this.getPokemonName(pokemonId),
         pokemonData.sprites.front_default
       );
-    },
-
-    getRandomId(min: number, max: number) {
-      return Math.floor(Math.random() * (max + 1 - min)) + min;
     },
 
     async correctGuess() {
