@@ -1,6 +1,6 @@
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
-import { GenerationData } from "../App.vue";
+import { GenerationData } from "../utilities/interfaces";
 
 export default defineComponent({
   props: {
