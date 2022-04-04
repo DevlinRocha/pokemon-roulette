@@ -20,7 +20,7 @@ export default defineComponent({
     },
     newHighScore: Boolean,
     prevTime: {
-      type: String,
+      type: Number,
       required: true,
     },
     newBestTime: Boolean,

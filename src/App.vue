@@ -78,9 +78,9 @@ export default defineComponent({
       normalHighScore: 0,
       newHighScore: false,
       time: 0,
-      prevTime: "",
-      bestEasyTime: "",
-      bestNormalTime: "",
+      prevTime: -1,
+      bestEasyTime: -1,
+      bestNormalTime: -1,
       bestEasyPokemon: "",
       bestNormalPokemon: "",
       newBestTime: false,
@@ -178,7 +178,7 @@ export default defineComponent({
       this.changeScore();
       this.prevScore = this.score;
       this.score = 0;
-      this.prevTime = "";
+      this.prevTime = -1;
       this.time = 0;
       this.focusButton();
     },
@@ -197,20 +197,14 @@ export default defineComponent({
     changeTime() {
       switch (this.difficulty) {
         case "easy":
-          if (
-            this.bestEasyTime !== "" &&
-            Number(this.prevTime) > Number(this.bestEasyTime)
-          )
+          if (this.bestEasyTime !== -1 && this.prevTime > this.bestEasyTime)
             return;
           this.bestEasyTime = this.prevTime;
           this.bestEasyPokemon = this.pokemon.name;
           this.newBestTime = true;
           break;
         default: // normal
-          if (
-            this.bestNormalTime !== "" &&
-            Number(this.prevTime) > Number(this.bestNormalTime)
-          )
+          if (this.bestNormalTime !== -1 && this.prevTime > this.bestNormalTime)
             return;
           this.bestNormalTime = this.prevTime;
           this.bestNormalPokemon = this.pokemon.name;
@@ -238,7 +232,7 @@ export default defineComponent({
     stopTimer() {
       if (!this.isGuessCorrect) return;
 
-      this.prevTime = String((Date.now() - this.time) / 1000);
+      this.prevTime = (Date.now() - this.time) / 1000;
       this.changeTime();
     },
   },
