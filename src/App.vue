@@ -212,19 +212,6 @@ export default defineComponent({
       }
     },
 
-    getTime() {
-      switch (this.difficulty) {
-        case "easy":
-          return `${this.bestEasyTime} ${
-            this.bestEasyPokemon && `(${this.bestEasyPokemon})`
-          }`;
-        default: // normal
-          return `${this.bestNormalTime} ${
-            this.bestNormalPokemon && `(${this.bestNormalPokemon})`
-          }`;
-      }
-    },
-
     startTimer() {
       this.time = new Date().getTime();
     },
@@ -245,6 +232,23 @@ export default defineComponent({
         );
         return selectedGeneration.range;
       });
+    },
+
+    bestTime: ({
+      difficulty,
+      bestEasyTime,
+      bestEasyPokemon,
+      bestNormalTime,
+      bestNormalPokemon,
+    }) => {
+      switch (difficulty) {
+        case "easy":
+          return `${bestEasyTime} ${bestEasyPokemon && `(${bestEasyPokemon})`}`;
+        default: // normal
+          return `${bestNormalTime} ${
+            bestNormalPokemon && `(${bestNormalPokemon})`
+          }`;
+      }
     },
   },
 
@@ -313,7 +317,7 @@ export default defineComponent({
           :newBestTime="newBestTime"
           :easyHighScore="easyHighScore"
           :normalHighScore="normalHighScore"
-          :getTime="getTime"
+          :bestTime="bestTime"
         />
         <DifficultySelection :score="score" v-model="difficulty" />
       </div>

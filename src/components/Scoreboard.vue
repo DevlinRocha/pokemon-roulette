@@ -32,8 +32,8 @@ export default defineComponent({
       type: Number,
       required: true,
     },
-    getTime: {
-      type: Function,
+    bestTime: {
+      type: String,
       required: true,
     },
   },
@@ -62,6 +62,6 @@ export default defineComponent({
   <div>Previous Time: {{ prevTime }}</div>
   <div>
     Best Time:
-    <span :class="newBestTime && 'correct'">{{ getTime() }}</span>
+    <span :class="newBestTime && 'correct'">{{ bestTime }}</span>
   </div>
 </template>
