@@ -243,8 +243,12 @@ export default defineComponent({
     }) => {
       switch (difficulty) {
         case "easy":
+          if (bestEasyTime === -1) return "---";
+
           return `${bestEasyTime} ${bestEasyPokemon && `(${bestEasyPokemon})`}`;
         default: // normal
+          if (bestNormalTime === -1) return "---";
+
           return `${bestNormalTime} ${
             bestNormalPokemon && `(${bestNormalPokemon})`
           }`;

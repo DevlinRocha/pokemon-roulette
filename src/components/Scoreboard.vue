@@ -59,7 +59,7 @@ export default defineComponent({
     <span :class="newHighScore && 'correct'">{{ highScore }}</span>
   </div>
 
-  <div>Previous Time: {{ prevTime }}</div>
+  <div>Previous Time: {{ prevTime === -1 ? "---" : prevTime }}</div>
   <div>
     Best Time:
     <span :class="newBestTime && 'correct'">{{ bestTime }}</span>
