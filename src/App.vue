@@ -77,8 +77,7 @@ export default defineComponent({
       easyHighScore: 0,
       normalHighScore: 0,
       newHighScore: false,
-      timer: 0,
-      time: "",
+      time: 0,
       prevTime: "",
       bestEasyTime: "",
       bestNormalTime: "",
@@ -180,7 +179,7 @@ export default defineComponent({
       this.prevScore = this.score;
       this.score = 0;
       this.prevTime = "";
-      this.time = "";
+      this.time = 0;
       this.focusButton();
     },
 
@@ -189,10 +188,7 @@ export default defineComponent({
         case "easy":
           if (this.score > this.easyHighScore) this.easyHighScore = this.score;
           break;
-        case "normal":
-          if (this.score > this.normalHighScore)
-            this.normalHighScore = this.score;
-        default:
+        default: // normal
           if (this.score > this.normalHighScore)
             this.normalHighScore = this.score;
       }
@@ -210,17 +206,7 @@ export default defineComponent({
           this.bestEasyPokemon = this.pokemon.name;
           this.newBestTime = true;
           break;
-        case "normal":
-          if (
-            this.bestNormalTime !== "" &&
-            Number(this.prevTime) > Number(this.bestNormalTime)
-          )
-            return;
-          this.bestNormalTime = this.prevTime;
-          this.bestNormalPokemon = this.pokemon.name;
-          this.newBestTime = true;
-          break;
-        default:
+        default: // normal
           if (
             this.bestNormalTime !== "" &&
             Number(this.prevTime) > Number(this.bestNormalTime)
@@ -238,35 +224,21 @@ export default defineComponent({
           return `${this.bestEasyTime} ${
             this.bestEasyPokemon && `(${this.bestEasyPokemon})`
           }`;
-        case "normal":
+        default: // normal
           return `${this.bestNormalTime} ${
             this.bestNormalPokemon && `(${this.bestNormalPokemon})`
-          }`;
-        default:
-          return `${this.bestEasyTime} ${
-            this.bestEasyPokemon && `(${this.bestEasyPokemon})`
           }`;
       }
     },
 
     startTimer() {
-      // Get rid of interval, replace with time logic start Date.getTime - endTime
-      clearInterval(this.timer);
-      const start = new Date().getTime();
-
-      this.timer = Number(
-        setInterval(() => {
-          return (this.time = String((Date.now() - start) / 1000));
-        }, 10)
-      );
+      this.time = new Date().getTime();
     },
 
     stopTimer() {
-      clearInterval(this.timer);
-
       if (!this.isGuessCorrect) return;
 
-      this.prevTime = this.time;
+      this.prevTime = String((Date.now() - this.time) / 1000);
       this.changeTime();
     },
   },
