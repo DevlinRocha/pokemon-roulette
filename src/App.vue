@@ -154,7 +154,7 @@ export default defineComponent({
 
     focusButton() {
       const answerFormRef = this.$refs.answerFormRef as any;
-      answerFormRef.$refs.buttonRef.focus();
+      answerFormRef.focusButton();
     },
 
     async nextPokemon() {
