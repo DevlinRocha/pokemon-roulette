@@ -15,17 +15,15 @@ export default defineComponent({
     },
   },
 
-  data() {
-    return {
-      DifficultyOptions: DifficultyOptions,
-      selected: DifficultyOptions.NORMAL,
-      capitalize: capitalize,
-    };
+  mounted() {
+    this.reset();
   },
 
   methods: {
+    capitalize,
+
     handleChange() {
-      const difficulty = this.$refs.difficultyRef as HTMLInputElement;
+      const difficulty = this.$refs.difficultyRef as HTMLSelectElement;
       if (!this.confirmChange()) return (difficulty.value = this.modelValue);
 
       this.$emit("update:modelValue", difficulty.value);
@@ -38,6 +36,18 @@ export default defineComponent({
         "Changing the difficulty will reset your current score, are you sure?"
       );
     },
+
+    reset() {
+      const options = this.$refs.optionsRef as HTMLOptionElement[];
+      return options.map(
+        (option) =>
+          option.value === DifficultyOptions.NORMAL && (option.selected = true)
+      );
+    },
+  },
+
+  computed: {
+    DifficultyOptions: () => DifficultyOptions,
   },
 });
 </script>
@@ -46,7 +56,11 @@ export default defineComponent({
   <div class="flex">
     <span>Difficulty:</span>
     <select @change="handleChange" ref="difficultyRef">
-      <option v-for="option in DifficultyOptions" :value="option" selected>
+      <option
+        v-for="option in DifficultyOptions"
+        :value="option"
+        ref="optionsRef"
+      >
         {{ capitalize(option) }}
       </option>
     </select>
