@@ -6,7 +6,7 @@ import DifficultySelection from "./components/DifficultySelection.vue";
 import AnswerForm from "./components/AnswerForm.vue";
 import Scoreboard from "./components/Scoreboard.vue";
 import {
-  DifficultyType,
+  DifficultyOptions,
   GenerationData,
   PokemonData,
 } from "./utilities/interfaces";
@@ -71,7 +71,7 @@ export default defineComponent({
       inputVal: "",
       isGuessCorrect: false,
       hasGivenUp: false,
-      difficulty: "normal" as DifficultyType,
+      difficulty: DifficultyOptions.NORMAL,
       score: 0,
       prevScore: 0,
       easyHighScore: 0,
@@ -185,7 +185,7 @@ export default defineComponent({
 
     changeScore() {
       switch (this.difficulty) {
-        case "easy":
+        case DifficultyOptions.EASY:
           if (this.score > this.easyHighScore) this.easyHighScore = this.score;
           break;
         default: // normal
@@ -196,7 +196,7 @@ export default defineComponent({
 
     changeTime() {
       switch (this.difficulty) {
-        case "easy":
+        case DifficultyOptions.EASY:
           if (this.bestEasyTime !== -1 && this.prevTime > this.bestEasyTime)
             return;
           this.bestEasyTime = this.prevTime;
@@ -206,6 +206,7 @@ export default defineComponent({
         default: // normal
           if (this.bestNormalTime !== -1 && this.prevTime > this.bestNormalTime)
             return;
+
           this.bestNormalTime = this.prevTime;
           this.bestNormalPokemon = this.pokemon.name;
           this.newBestTime = true;
@@ -242,7 +243,7 @@ export default defineComponent({
       bestNormalPokemon,
     }) => {
       switch (difficulty) {
-        case "easy":
+        case DifficultyOptions.EASY:
           if (bestEasyTime === -1) return "---";
 
           return `${bestEasyTime} ${bestEasyPokemon && `(${bestEasyPokemon})`}`;

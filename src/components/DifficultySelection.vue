@@ -1,5 +1,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
+import { DifficultyOptions } from "../utilities/interfaces";
+import { capitalize } from "../utilities/functions";
 
 export default defineComponent({
   props: {
@@ -11,6 +13,14 @@ export default defineComponent({
       type: Number,
       required: true,
     },
+  },
+
+  data() {
+    return {
+      DifficultyOptions: DifficultyOptions,
+      selected: DifficultyOptions.NORMAL,
+      capitalize: capitalize,
+    };
   },
 
   methods: {
@@ -36,8 +46,9 @@ export default defineComponent({
   <div class="flex">
     <span>Difficulty:</span>
     <select @change="handleChange" ref="difficultyRef">
-      <option value="easy">Easy</option>
-      <option value="normal" selected>Normal</option>
+      <option v-for="option in DifficultyOptions" :value="option" selected>
+        {{ capitalize(option) }}
+      </option>
     </select>
   </div>
 </template>

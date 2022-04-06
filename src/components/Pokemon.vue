@@ -1,6 +1,6 @@
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
-import { DifficultyType, PokemonData } from "../utilities/interfaces";
+import { DifficultyOptions, PokemonData } from "../utilities/interfaces";
 
 export default defineComponent({
   props: {
@@ -8,7 +8,7 @@ export default defineComponent({
       type: Object as PropType<PokemonData>,
       required: true,
     },
-    difficulty: String as PropType<DifficultyType>,
+    difficulty: String as PropType<DifficultyOptions>,
     isGuessCorrect: Boolean,
     hasGivenUp: Boolean,
   },

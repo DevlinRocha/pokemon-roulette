@@ -10,4 +10,7 @@ export interface GenerationData {
   range: [number, number];
 }
 
-export type DifficultyType = "easy" | "normal";
+export enum DifficultyOptions {
+  EASY = "easy",
+  NORMAL = "normal",
+}
