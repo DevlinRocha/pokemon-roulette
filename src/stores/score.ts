@@ -38,9 +38,5 @@ export const useScoreStore = defineStore("score", {
     newNormalHighScore() {
       this.easyHighScore = this.currentScore;
     },
-
-    toggleHighScore() {
-      this.newHighScore = !this.newHighScore;
-    },
   },
 });

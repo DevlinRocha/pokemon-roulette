@@ -140,7 +140,7 @@ export default defineComponent({
       this.isGuessCorrect = true;
       this.stopTimer();
       this.title = `It's ${await this.getPokemonName(this.pokemon.id)}!`;
-      this.scoreStore.correctGuess();
+      this.scoreStore.currentScore++;
       this.focusButton();
     },
 
@@ -159,8 +159,7 @@ export default defineComponent({
       this.inputVal = "";
       this.isGuessCorrect = false;
       this.hasGivenUp = false;
-      if (this.scoreStore.newHighScore === true)
-        this.scoreStore.toggleHighScore();
+      this.scoreStore.newHighScore = false;
       this.newBestTime = false;
       this.title = "Who's that Pokémon?";
       this.focusInput();
