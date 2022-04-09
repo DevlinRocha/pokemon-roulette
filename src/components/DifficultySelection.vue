@@ -2,15 +2,12 @@
 import { defineComponent } from "vue";
 import { DifficultyOptions } from "../utilities/interfaces";
 import { capitalize } from "../utilities/functions";
+import { useScoreStore } from "../stores/score";
 
 export default defineComponent({
   props: {
     modelValue: {
       type: String,
-      required: true,
-    },
-    score: {
-      type: Number,
       required: true,
     },
   },
@@ -30,7 +27,7 @@ export default defineComponent({
     },
 
     confirmChange() {
-      if (this.score <= 0) return true;
+      if (this.scoreStore.currentScore <= 0) return true;
 
       return confirm(
         "Changing the difficulty will reset your current score, are you sure?"
@@ -48,6 +45,8 @@ export default defineComponent({
 
   computed: {
     DifficultyOptions: () => DifficultyOptions,
+
+    scoreStore: () => useScoreStore(),
   },
 });
 </script>

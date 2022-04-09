@@ -2,6 +2,7 @@
 import { defineComponent, PropType } from "vue";
 import { capitalize } from "../utilities/functions";
 import { PokemonData } from "../utilities/interfaces";
+import { useScoreStore } from "../stores/score";
 
 export default defineComponent({
   props: {
@@ -15,7 +16,6 @@ export default defineComponent({
     },
     isGuessCorrect: Boolean,
     hasGivenUp: Boolean,
-    newHighScore: Boolean,
     newBestTime: Boolean,
   },
 
@@ -40,6 +40,10 @@ export default defineComponent({
       buttonRef.focus();
     },
   },
+
+  computed: {
+    scoreStore: () => useScoreStore(),
+  },
 });
 </script>
 
@@ -50,11 +54,15 @@ export default defineComponent({
       isGuessCorrect || hasGivenUp ? $emit('nextPokemon') : $emit('giveUp')
     "
   >
-    <span :class="!isGuessCorrect && !newHighScore && !newBestTime && 'hidden'">
+    <span
+      :class="
+        !isGuessCorrect && !scoreStore.newHighScore && !newBestTime && 'hidden'
+      "
+    >
       {{
         (newBestTime && "New best time!") ||
         (isGuessCorrect && "Good job!") ||
-        (newHighScore && "New high score!")
+        (scoreStore.newHighScore && "New high score!")
       }}
     </span>
 

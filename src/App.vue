@@ -12,6 +12,8 @@ import {
 } from "./utilities/interfaces";
 import { PokemonClass } from "./utilities/classes";
 import { getRandomId } from "./utilities/functions";
+import { useScoreStore } from "./stores/score";
+import { mapStores } from "pinia";
 
 export default defineComponent({
   mounted() {
@@ -72,11 +74,6 @@ export default defineComponent({
       isGuessCorrect: false,
       hasGivenUp: false,
       difficulty: DifficultyOptions.NORMAL,
-      score: 0,
-      prevScore: 0,
-      easyHighScore: 0,
-      normalHighScore: 0,
-      newHighScore: false,
       time: 0,
       prevTime: -1,
       bestEasyTime: -1,
@@ -143,7 +140,7 @@ export default defineComponent({
       this.isGuessCorrect = true;
       this.stopTimer();
       this.title = `It's ${await this.getPokemonName(this.pokemon.id)}!`;
-      this.score = this.score + 1;
+      this.scoreStore.correctGuess();
       this.focusButton();
     },
 
@@ -162,7 +159,8 @@ export default defineComponent({
       this.inputVal = "";
       this.isGuessCorrect = false;
       this.hasGivenUp = false;
-      this.newHighScore = false;
+      if (this.scoreStore.newHighScore === true)
+        this.scoreStore.toggleHighScore();
       this.newBestTime = false;
       this.title = "Who's that Pokémon?";
       this.focusInput();
@@ -175,23 +173,11 @@ export default defineComponent({
       this.isGuessCorrect = false;
       this.hasGivenUp = true;
       this.title = `It's ${this.pokemon.name}!`;
-      this.changeScore();
-      this.prevScore = this.score;
-      this.score = 0;
+      this.scoreStore.changeScore(this.difficulty);
+      this.scoreStore.giveUp();
       this.prevTime = -1;
       this.time = 0;
       this.focusButton();
-    },
-
-    changeScore() {
-      switch (this.difficulty) {
-        case DifficultyOptions.EASY:
-          if (this.score > this.easyHighScore) this.easyHighScore = this.score;
-          break;
-        default: // normal
-          if (this.score > this.normalHighScore)
-            this.normalHighScore = this.score;
-      }
     },
 
     changeTime() {
@@ -226,6 +212,8 @@ export default defineComponent({
   },
 
   computed: {
+    ...mapStores(useScoreStore),
+
     acceptedPokemonIdRanges: ({ selectedGenerationIds, generations }) => {
       return selectedGenerationIds.map((id: number) => {
         let selectedGeneration = generations.find(
@@ -282,7 +270,6 @@ export default defineComponent({
     <div class="container">
       <GenerationFilter
         :generations="generations"
-        :score="score"
         v-model="selectedGenerationIds"
         @toggleGeneration="giveUp"
         class="side-panel-left"
@@ -301,7 +288,6 @@ export default defineComponent({
           :pokemon="pokemon"
           :isGuessCorrect="isGuessCorrect"
           :hasGivenUp="hasGivenUp"
-          :newHighScore="newHighScore"
           :newBestTime="newBestTime"
           v-model="inputVal"
           @correctGuess="correctGuess"
@@ -313,18 +299,13 @@ export default defineComponent({
       <div class="side-panel-right">
         <Scoreboard
           :difficulty="difficulty"
-          :score="score"
           :isGuessCorrect="isGuessCorrect"
           :hasGivenUp="hasGivenUp"
-          :prevScore="prevScore"
-          :newHighScore="newHighScore"
           :prevTime="prevTime"
           :newBestTime="newBestTime"
-          :easyHighScore="easyHighScore"
-          :normalHighScore="normalHighScore"
           :bestTime="bestTime"
         />
-        <DifficultySelection :score="score" v-model="difficulty" />
+        <DifficultySelection v-model="difficulty" />
       </div>
     </div>
   </div>

@@ -1,6 +1,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
 import { DifficultyOptions } from "../utilities/interfaces";
+import { useScoreStore } from "../stores/score";
 
 export default defineComponent({
   props: {
@@ -8,30 +9,13 @@ export default defineComponent({
       type: String as PropType<DifficultyOptions>,
       required: true,
     },
-    score: {
-      type: Number,
-      required: true,
-    },
     isGuessCorrect: Boolean,
     hasGivenUp: Boolean,
-    prevScore: {
-      type: Number,
-      required: true,
-    },
-    newHighScore: Boolean,
     prevTime: {
       type: Number,
       required: true,
     },
     newBestTime: Boolean,
-    easyHighScore: {
-      type: Number,
-      required: true,
-    },
-    normalHighScore: {
-      type: Number,
-      required: true,
-    },
     bestTime: {
       type: String,
       required: true,
@@ -39,8 +23,10 @@ export default defineComponent({
   },
 
   computed: {
+    scoreStore: () => useScoreStore(),
+
     highScore() {
-      return this[`${this.difficulty}HighScore`];
+      return this.scoreStore[`${this.difficulty}HighScore`];
     },
   },
 });
@@ -48,15 +34,15 @@ export default defineComponent({
 
 <template>
   <div>
-    Current Score: {{ score }}
+    Current Score: {{ scoreStore.currentScore }}
     <span v-show="isGuessCorrect" class="correct">+1</span
-    ><span v-show="hasGivenUp && prevScore > 0" class="invalid"
-      >-{{ prevScore }}</span
+    ><span v-show="hasGivenUp && scoreStore.prevScore > 0" class="invalid"
+      >-{{ scoreStore.prevScore }}</span
     >
   </div>
   <div>
     High Score:
-    <span :class="newHighScore && 'correct'">{{ highScore }}</span>
+    <span :class="scoreStore.newHighScore && 'correct'">{{ highScore }}</span>
   </div>
 
   <div>Previous Time: {{ prevTime === -1 ? "---" : prevTime }}</div>
