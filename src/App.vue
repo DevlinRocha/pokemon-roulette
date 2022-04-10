@@ -172,8 +172,7 @@ export default defineComponent({
       this.isGuessCorrect = false;
       this.hasGivenUp = true;
       this.title = `It's ${this.pokemon.name}!`;
-      this.scoreStore.changeScore(this.difficulty);
-      this.scoreStore.giveUp();
+      this.scoreStore.giveUp(this.difficulty);
       this.prevTime = -1;
       this.time = 0;
       this.focusButton();

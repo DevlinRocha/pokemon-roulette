@@ -26,7 +26,8 @@ export const useScoreStore = defineStore("score", {
       }
     },
 
-    giveUp() {
+    giveUp(difficulty: string) {
+      this.changeScore(difficulty);
       this.prevScore = this.currentScore;
       this.currentScore = 0;
     },
@@ -36,7 +37,7 @@ export const useScoreStore = defineStore("score", {
     },
 
     newNormalHighScore() {
-      this.easyHighScore = this.currentScore;
+      this.normalHighScore = this.currentScore;
     },
   },
 });
