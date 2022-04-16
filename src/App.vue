@@ -13,7 +13,8 @@ import {
 import { PokemonClass } from "./utilities/classes";
 import { getRandomId } from "./utilities/functions";
 import { useScoreStore } from "./stores/score";
-import { mapStores } from "pinia";
+import { useTimeStore } from "./stores/time";
+import { mapActions, mapState, mapStores } from "pinia";
 
 export default defineComponent({
   mounted() {
@@ -74,17 +75,12 @@ export default defineComponent({
       isGuessCorrect: false,
       hasGivenUp: false,
       difficulty: DifficultyOptions.NORMAL,
-      time: 0,
-      prevTime: -1,
-      bestEasyTime: -1,
-      bestNormalTime: -1,
-      bestEasyPokemon: "",
-      bestNormalPokemon: "",
-      newBestTime: false,
     };
   },
 
   methods: {
+    ...mapActions(useScoreStore, ["giveUp"]),
+
     selectAllGenerations() {
       this.selectedGenerationIds = this.generations.map(
         (generation) => generation.id
@@ -160,7 +156,7 @@ export default defineComponent({
       this.isGuessCorrect = false;
       this.hasGivenUp = false;
       this.scoreStore.newHighScore = false;
-      this.newBestTime = false;
+      this.timeStore.newBestTime = false;
       this.title = "Who's that Pokémon?";
       this.focusInput();
       this.startTimer();
@@ -173,44 +169,54 @@ export default defineComponent({
       this.hasGivenUp = true;
       this.title = `It's ${this.pokemon.name}!`;
       this.scoreStore.giveUp(this.difficulty);
-      this.prevTime = -1;
-      this.time = 0;
+      this.timeStore.prevTime = -1;
+      this.timeStore.currentTime = 0;
       this.focusButton();
     },
 
     changeTime() {
       switch (this.difficulty) {
         case DifficultyOptions.EASY:
-          if (this.bestEasyTime !== -1 && this.prevTime > this.bestEasyTime)
+          if (
+            this.timeStore.bestEasyTime !== -1 &&
+            this.timeStore.prevTime > this.timeStore.bestEasyTime
+          )
             return;
-          this.bestEasyTime = this.prevTime;
-          this.bestEasyPokemon = this.pokemon.name;
-          this.newBestTime = true;
+          this.timeStore.bestEasyTime = this.timeStore.prevTime;
+          this.timeStore.bestEasyPokemon = this.pokemon.name;
+          this.timeStore.newBestTime = true;
           break;
         default: // normal
-          if (this.bestNormalTime !== -1 && this.prevTime > this.bestNormalTime)
+          if (
+            this.timeStore.bestNormalTime !== -1 &&
+            this.timeStore.prevTime > this.timeStore.bestNormalTime
+          )
             return;
 
-          this.bestNormalTime = this.prevTime;
-          this.bestNormalPokemon = this.pokemon.name;
-          this.newBestTime = true;
+          this.timeStore.bestNormalTime = this.timeStore.prevTime;
+          this.timeStore.bestNormalPokemon = this.pokemon.name;
+          this.timeStore.newBestTime = true;
       }
     },
 
     startTimer() {
-      this.time = new Date().getTime();
+      this.timeStore.currentTime = new Date().getTime();
     },
 
     stopTimer() {
       if (!this.isGuessCorrect) return;
 
-      this.prevTime = (Date.now() - this.time) / 1000;
+      this.timeStore.prevTime =
+        (Date.now() - this.timeStore.currentTime) / 1000;
       this.changeTime();
     },
   },
 
   computed: {
-    ...mapStores(useScoreStore),
+    ...mapStores(useScoreStore, useTimeStore),
+
+    scoreStore: () => useScoreStore(),
+    timeStore: () => useTimeStore(),
 
     acceptedPokemonIdRanges: ({ selectedGenerationIds, generations }) => {
       return selectedGenerationIds.map((id: number) => {
@@ -221,26 +227,24 @@ export default defineComponent({
       });
     },
 
-    bestTime: ({
-      difficulty,
-      bestEasyTime,
-      bestEasyPokemon,
-      bestNormalTime,
-      bestNormalPokemon,
-    }) => {
-      switch (difficulty) {
-        case DifficultyOptions.EASY:
-          if (bestEasyTime === -1) return "---";
+    // bestTime: ({ difficulty, timeStore }) => {
+    //   switch (difficulty) {
+    //     case DifficultyOptions.EASY:
+    //       return "ues";
+    //       if (timeStore.bestEasyTime === -1) return "---";
 
-          return `${bestEasyTime} ${bestEasyPokemon && `(${bestEasyPokemon})`}`;
-        default: // normal
-          if (bestNormalTime === -1) return "---";
+    //       return `${timeStore.bestEasyTime} ${
+    //         timeStore.bestEasyPokemon && `(${timeStore.bestEasyPokemon})`
+    //       }`;
+    //     default: // normal
+    //       return "non";
+    //       if (timeStore.bestNormalTime === -1) return "---";
 
-          return `${bestNormalTime} ${
-            bestNormalPokemon && `(${bestNormalPokemon})`
-          }`;
-      }
-    },
+    //       return `${timeStore.bestNormalTime} ${
+    //         timeStore.bestNormalPokemon && `(${timeStore.bestNormalPokemon})`
+    //       }`;
+    //   }
+    // },
   },
 
   watch: {
@@ -286,7 +290,6 @@ export default defineComponent({
           :pokemon="pokemon"
           :isGuessCorrect="isGuessCorrect"
           :hasGivenUp="hasGivenUp"
-          :newBestTime="newBestTime"
           v-model="inputVal"
           @correctGuess="correctGuess"
           @nextPokemon="nextPokemon"
@@ -299,9 +302,6 @@ export default defineComponent({
           :difficulty="difficulty"
           :isGuessCorrect="isGuessCorrect"
           :hasGivenUp="hasGivenUp"
-          :prevTime="prevTime"
-          :newBestTime="newBestTime"
-          :bestTime="bestTime"
         />
         <DifficultySelection v-model="difficulty" />
       </div>

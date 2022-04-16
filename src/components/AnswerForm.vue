@@ -3,6 +3,7 @@ import { defineComponent, PropType } from "vue";
 import { capitalize } from "../utilities/functions";
 import { PokemonData } from "../utilities/interfaces";
 import { useScoreStore } from "../stores/score";
+import { useTimeStore } from "../stores/time";
 
 export default defineComponent({
   props: {
@@ -16,7 +17,6 @@ export default defineComponent({
     },
     isGuessCorrect: Boolean,
     hasGivenUp: Boolean,
-    newBestTime: Boolean,
   },
 
   methods: {
@@ -43,6 +43,7 @@ export default defineComponent({
 
   computed: {
     scoreStore: () => useScoreStore(),
+    timeStore: () => useTimeStore(),
   },
 });
 </script>
@@ -56,11 +57,14 @@ export default defineComponent({
   >
     <span
       :class="
-        !isGuessCorrect && !scoreStore.newHighScore && !newBestTime && 'hidden'
+        !isGuessCorrect &&
+        !scoreStore.newHighScore &&
+        !timeStore.newBestTime &&
+        'hidden'
       "
     >
       {{
-        (newBestTime && "New best time!") ||
+        (timeStore.newBestTime && "New best time!") ||
         (isGuessCorrect && "Good job!") ||
         (scoreStore.newHighScore && "New high score!")
       }}

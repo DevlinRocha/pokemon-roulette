@@ -2,6 +2,7 @@
 import { defineComponent, PropType } from "vue";
 import { DifficultyOptions } from "../utilities/interfaces";
 import { useScoreStore } from "../stores/score";
+import { useTimeStore } from "../stores/time";
 
 export default defineComponent({
   props: {
@@ -11,19 +12,38 @@ export default defineComponent({
     },
     isGuessCorrect: Boolean,
     hasGivenUp: Boolean,
-    prevTime: {
-      type: Number,
-      required: true,
-    },
-    newBestTime: Boolean,
-    bestTime: {
-      type: String,
-      required: true,
-    },
   },
 
   computed: {
     scoreStore: () => useScoreStore(),
+    timeStore: () => useTimeStore(),
+
+    bestTime() {
+      switch (this.difficulty) {
+        case DifficultyOptions.EASY:
+          if (
+            this.timeStore.bestEasyTime === -1 ||
+            this.timeStore.bestEasyTime === undefined
+          )
+            return "---";
+
+          return `${this.timeStore.bestEasyTime} ${
+            !!this.timeStore.bestEasyPokemon &&
+            `(${this.timeStore.bestEasyPokemon})`
+          }`;
+        default: // normal
+          if (
+            this.timeStore.bestNormalTime === -1 ||
+            this.timeStore.bestNormalTime === undefined
+          )
+            return "---";
+
+          return `${this.timeStore.bestNormalTime} ${
+            !!this.timeStore.bestNormalPokemon &&
+            `(${this.timeStore.bestNormalPokemon})`
+          }`;
+      }
+    },
 
     highScore() {
       return this.scoreStore[`${this.difficulty}HighScore`];
@@ -45,9 +65,16 @@ export default defineComponent({
     <span :class="scoreStore.newHighScore && 'correct'">{{ highScore }}</span>
   </div>
 
-  <div>Previous Time: {{ prevTime === -1 ? "---" : prevTime }}</div>
+  <div>
+    Previous Time:
+    {{
+      timeStore.prevTime === -1 || timeStore.prevTime === undefined
+        ? "---"
+        : timeStore.prevTime
+    }}
+  </div>
   <div>
     Best Time:
-    <span :class="newBestTime && 'correct'">{{ bestTime }}</span>
+    <span :class="timeStore.newBestTime && 'correct'">{{ this.bestTime }}</span>
   </div>
 </template>
