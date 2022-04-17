@@ -75,6 +75,6 @@ export default defineComponent({
   </div>
   <div>
     Best Time:
-    <span :class="timeStore.newBestTime && 'correct'">{{ this.bestTime }}</span>
+    <span :class="timeStore.newBestTime && 'correct'">{{ bestTime }}</span>
   </div>
 </template>
