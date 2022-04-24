@@ -226,25 +226,6 @@ export default defineComponent({
         return selectedGeneration.range;
       });
     },
-
-    // bestTime: ({ difficulty, timeStore }) => {
-    //   switch (difficulty) {
-    //     case DifficultyOptions.EASY:
-    //       return "ues";
-    //       if (timeStore.bestEasyTime === -1) return "---";
-
-    //       return `${timeStore.bestEasyTime} ${
-    //         timeStore.bestEasyPokemon && `(${timeStore.bestEasyPokemon})`
-    //       }`;
-    //     default: // normal
-    //       return "non";
-    //       if (timeStore.bestNormalTime === -1) return "---";
-
-    //       return `${timeStore.bestNormalTime} ${
-    //         timeStore.bestNormalPokemon && `(${timeStore.bestNormalPokemon})`
-    //       }`;
-    //   }
-    // },
   },
 
   watch: {
