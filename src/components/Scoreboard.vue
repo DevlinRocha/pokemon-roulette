@@ -1,52 +1,18 @@
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
-import { DifficultyOptions } from "../utilities/interfaces";
+import { defineComponent } from "vue";
 import { useScoreStore } from "../stores/score";
+import { useGameStore } from "../stores/game";
+import { mapStores } from "pinia";
 import { useTimeStore } from "../stores/time";
 
 export default defineComponent({
-  props: {
-    difficulty: {
-      type: String as PropType<DifficultyOptions>,
-      required: true,
-    },
-    isGuessCorrect: Boolean,
-    hasGivenUp: Boolean,
-  },
-
   computed: {
-    scoreStore: () => useScoreStore(),
-    timeStore: () => useTimeStore(),
-
-    bestTime() {
-      switch (this.difficulty) {
-        case DifficultyOptions.EASY:
-          if (
-            this.timeStore.bestEasyTime === -1 ||
-            this.timeStore.bestEasyTime === undefined
-          )
-            return "---";
-
-          return `${this.timeStore.bestEasyTime} ${
-            !!this.timeStore.bestEasyPokemon &&
-            `(${this.timeStore.bestEasyPokemon})`
-          }`;
-        default: // normal
-          if (
-            this.timeStore.bestNormalTime === -1 ||
-            this.timeStore.bestNormalTime === undefined
-          )
-            return "---";
-
-          return `${this.timeStore.bestNormalTime} ${
-            !!this.timeStore.bestNormalPokemon &&
-            `(${this.timeStore.bestNormalPokemon})`
-          }`;
-      }
-    },
+    ...mapStores(useScoreStore, useGameStore, useTimeStore),
 
     highScore() {
-      return this.scoreStore[`${this.difficulty}HighScore`];
+      const score = useScoreStore();
+      const game = useGameStore();
+      return score[`${game.difficulty}HighScore`];
     },
   },
 });
@@ -55,8 +21,10 @@ export default defineComponent({
 <template>
   <div>
     Current Score: {{ scoreStore.currentScore }}
-    <span v-show="isGuessCorrect" class="correct">+1</span
-    ><span v-show="hasGivenUp && scoreStore.prevScore > 0" class="invalid"
+    <span v-show="gameStore.isGuessCorrect" class="correct">+1</span
+    ><span
+      v-show="gameStore.hasGivenUp && scoreStore.prevScore > 0"
+      class="invalid"
       >-{{ scoreStore.prevScore }}</span
     >
   </div>
@@ -75,6 +43,8 @@ export default defineComponent({
   </div>
   <div>
     Best Time:
-    <span :class="timeStore.newBestTime && 'correct'">{{ bestTime }}</span>
+    <span :class="timeStore.newBestTime && 'correct'">{{
+      timeStore.bestTime
+    }}</span>
   </div>
 </template>

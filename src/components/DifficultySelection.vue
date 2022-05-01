@@ -57,6 +57,7 @@ export default defineComponent({
     <select @change="handleChange" ref="difficultyRef">
       <option
         v-for="option in DifficultyOptions"
+        :key="option"
         :value="option"
         ref="optionsRef"
       >

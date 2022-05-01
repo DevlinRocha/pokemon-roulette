@@ -1,16 +1,13 @@
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
-import { GenerationData } from "../utilities/interfaces";
 import { useScoreStore } from "../stores/score";
+import { useGameStore } from "../stores/game";
+import { mapStores } from "pinia";
 
 export default defineComponent({
   props: {
     modelValue: {
       type: Array as PropType<Number[]>,
-      required: true,
-    },
-    generations: {
-      type: Array as PropType<GenerationData[]>,
       required: true,
     },
   },
@@ -50,7 +47,7 @@ export default defineComponent({
   },
 
   computed: {
-    scoreStore: () => useScoreStore(),
+    ...mapStores(useScoreStore, useGameStore),
   },
 });
 </script>
@@ -58,7 +55,7 @@ export default defineComponent({
 <template>
   <div>
     <div
-      v-for="generation in generations"
+      v-for="generation in gameStore.generations"
       class="generation"
       :key="generation.id"
     >
