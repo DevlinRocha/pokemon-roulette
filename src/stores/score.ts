@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { DifficultyOptions } from "../utilities/interfaces";
+import { useGameStore } from "./game";
 
 export const useScoreStore = defineStore("score", {
   state: () => ({
@@ -11,33 +12,41 @@ export const useScoreStore = defineStore("score", {
   }),
   actions: {
     correctGuess() {
-      this.currentScore++;
+      return this.currentScore++;
     },
 
     changeScore(difficulty: string) {
       switch (difficulty) {
         case DifficultyOptions.EASY:
-          if (this.currentScore > this.easyHighScore) this.newEasyHighScore();
+          if (this.currentScore > this.easyHighScore)
+            return this.newEasyHighScore();
           break;
 
         default: // normal
           if (this.currentScore > this.normalHighScore)
-            this.newNormalHighScore();
+            return this.newNormalHighScore();
       }
     },
 
-    giveUp(difficulty: string) {
-      this.changeScore(difficulty);
+    giveUp() {
+      this.changeScore(this.gameStore.difficulty);
       this.prevScore = this.currentScore;
-      this.currentScore = 0;
+      return (this.currentScore = 0);
     },
 
     newEasyHighScore() {
-      this.easyHighScore = this.currentScore;
+      return (this.easyHighScore = this.currentScore);
     },
 
     newNormalHighScore() {
-      this.normalHighScore = this.currentScore;
+      return (this.normalHighScore = this.currentScore);
     },
+
+    highScore() {
+      return this[`${this.gameStore.difficulty}HighScore`];
+    },
+  },
+  getters: {
+    gameStore: () => useGameStore(),
   },
 });
