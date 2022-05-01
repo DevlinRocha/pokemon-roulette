@@ -1,19 +1,13 @@
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
-import { GenerationData } from "../utilities/interfaces";
+import { useScoreStore } from "../stores/score";
+import { useGameStore } from "../stores/game";
+import { mapStores } from "pinia";
 
 export default defineComponent({
   props: {
     modelValue: {
       type: Array as PropType<Number[]>,
-      required: true,
-    },
-    generations: {
-      type: Array as PropType<GenerationData[]>,
-      required: true,
-    },
-    score: {
-      type: Number,
       required: true,
     },
   },
@@ -39,7 +33,7 @@ export default defineComponent({
     },
 
     confirmToggle() {
-      if (this.score <= 0) return true;
+      if (this.scoreStore.currentScore <= 0) return true;
 
       return confirm(
         "Changing Pokémon generations will reset your current score, are you sure?"
@@ -51,13 +45,17 @@ export default defineComponent({
       return true;
     },
   },
+
+  computed: {
+    ...mapStores(useScoreStore, useGameStore),
+  },
 });
 </script>
 
 <template>
   <div>
     <div
-      v-for="generation in generations"
+      v-for="generation in gameStore.generations"
       class="generation"
       :key="generation.id"
     >

@@ -48,5 +48,6 @@ yarn dev
 
 - [Vue](https://vuejs.org)
 - [Vite](https://vitejs.dev)
+- [Pinia](https://pinia.vuejs.org/)
 - [TypeScript](https://www.typescriptlang.org/)
 - [PokeAPI](https://pokeapi.co)

@@ -1,7 +1,10 @@
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
+import { defineComponent } from "vue";
 import { capitalize } from "../utilities/functions";
-import { PokemonData } from "../utilities/interfaces";
+import { mapStores } from "pinia";
+import { useScoreStore } from "../stores/score";
+import { useTimeStore } from "../stores/time";
+import { useGameStore } from "../stores/game";
 
 export default defineComponent({
   props: {
@@ -9,14 +12,6 @@ export default defineComponent({
       type: String,
       required: true,
     },
-    pokemon: {
-      type: Object as PropType<PokemonData>,
-      required: true,
-    },
-    isGuessCorrect: Boolean,
-    hasGivenUp: Boolean,
-    newHighScore: Boolean,
-    newBestTime: Boolean,
   },
 
   methods: {
@@ -25,7 +20,9 @@ export default defineComponent({
 
       this.$emit("update:modelValue", capitalize(input.value));
 
-      if (input.value.toLowerCase() === this.pokemon.name.toLowerCase())
+      if (
+        input.value.toLowerCase() === this.gameStore.pokemon.name.toLowerCase()
+      )
         this.$emit("correctGuess");
     },
 
@@ -40,6 +37,10 @@ export default defineComponent({
       buttonRef.focus();
     },
   },
+
+  computed: {
+    ...mapStores(useScoreStore, useTimeStore, useGameStore),
+  },
 });
 </script>
 
@@ -47,14 +48,23 @@ export default defineComponent({
   <form
     class="column-container"
     @submit.prevent="
-      isGuessCorrect || hasGivenUp ? $emit('nextPokemon') : $emit('giveUp')
+      gameStore.isGuessCorrect || gameStore.hasGivenUp
+        ? $emit('nextPokemon')
+        : $emit('giveUp')
     "
   >
-    <span :class="!isGuessCorrect && !newHighScore && !newBestTime && 'hidden'">
+    <span
+      :class="
+        !gameStore.isGuessCorrect &&
+        !scoreStore.newHighScore &&
+        !timeStore.newBestTime &&
+        'hidden'
+      "
+    >
       {{
-        (newBestTime && "New best time!") ||
-        (isGuessCorrect && "Good job!") ||
-        (newHighScore && "New high score!")
+        (timeStore.newBestTime && "New best time!") ||
+        (gameStore.isGuessCorrect && "Good job!") ||
+        (scoreStore.newHighScore && "New high score!")
       }}
     </span>
 
@@ -62,14 +72,24 @@ export default defineComponent({
       @input="handleInput"
       ref="inputRef"
       :value="modelValue"
-      :disabled="isGuessCorrect || hasGivenUp"
-      :class="(hasGivenUp && 'invalid') || (isGuessCorrect && 'correct')"
+      :disabled="gameStore.isGuessCorrect || gameStore.hasGivenUp"
+      :class="
+        (gameStore.hasGivenUp && 'invalid') ||
+        (gameStore.isGuessCorrect && 'correct')
+      "
       autocorrect="false"
       placeholder="Guess Pokémon..."
     />
 
-    <button :class="(isGuessCorrect || hasGivenUp) && 'valid'" ref="buttonRef">
-      {{ isGuessCorrect || hasGivenUp ? "Next Pokémon!" : "Give Up" }}
+    <button
+      :class="(gameStore.isGuessCorrect || gameStore.hasGivenUp) && 'valid'"
+      ref="buttonRef"
+    >
+      {{
+        gameStore.isGuessCorrect || gameStore.hasGivenUp
+          ? "Next Pokémon!"
+          : "Give Up"
+      }}
     </button>
   </form>
 </template>

@@ -1,46 +1,18 @@
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
-import { DifficultyOptions } from "../utilities/interfaces";
+import { defineComponent } from "vue";
+import { useScoreStore } from "../stores/score";
+import { useGameStore } from "../stores/game";
+import { mapStores } from "pinia";
+import { useTimeStore } from "../stores/time";
 
 export default defineComponent({
-  props: {
-    difficulty: {
-      type: String as PropType<DifficultyOptions>,
-      required: true,
-    },
-    score: {
-      type: Number,
-      required: true,
-    },
-    isGuessCorrect: Boolean,
-    hasGivenUp: Boolean,
-    prevScore: {
-      type: Number,
-      required: true,
-    },
-    newHighScore: Boolean,
-    prevTime: {
-      type: Number,
-      required: true,
-    },
-    newBestTime: Boolean,
-    easyHighScore: {
-      type: Number,
-      required: true,
-    },
-    normalHighScore: {
-      type: Number,
-      required: true,
-    },
-    bestTime: {
-      type: String,
-      required: true,
-    },
-  },
-
   computed: {
+    ...mapStores(useScoreStore, useGameStore, useTimeStore),
+
     highScore() {
-      return this[`${this.difficulty}HighScore`];
+      const score = useScoreStore();
+      const game = useGameStore();
+      return score[`${game.difficulty}HighScore`];
     },
   },
 });
@@ -48,20 +20,31 @@ export default defineComponent({
 
 <template>
   <div>
-    Current Score: {{ score }}
-    <span v-show="isGuessCorrect" class="correct">+1</span
-    ><span v-show="hasGivenUp && prevScore > 0" class="invalid"
-      >-{{ prevScore }}</span
+    Current Score: {{ scoreStore.currentScore }}
+    <span v-show="gameStore.isGuessCorrect" class="correct">+1</span
+    ><span
+      v-show="gameStore.hasGivenUp && scoreStore.prevScore > 0"
+      class="invalid"
+      >-{{ scoreStore.prevScore }}</span
     >
   </div>
   <div>
     High Score:
-    <span :class="newHighScore && 'correct'">{{ highScore }}</span>
+    <span :class="scoreStore.newHighScore && 'correct'">{{ highScore }}</span>
   </div>
 
-  <div>Previous Time: {{ prevTime === -1 ? "---" : prevTime }}</div>
+  <div>
+    Previous Time:
+    {{
+      timeStore.prevTime === -1 || timeStore.prevTime === undefined
+        ? "---"
+        : timeStore.prevTime
+    }}
+  </div>
   <div>
     Best Time:
-    <span :class="newBestTime && 'correct'">{{ bestTime }}</span>
+    <span :class="timeStore.newBestTime && 'correct'">{{
+      timeStore.bestTime
+    }}</span>
   </div>
 </template>
