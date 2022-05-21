@@ -1,17 +1,13 @@
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
+import { defineComponent } from "vue";
 import { useGameStore } from "../stores/game";
 import { DifficultyOptions } from "../utilities/interfaces";
 
 export default defineComponent({
-  props: {
-    difficulty: String as PropType<DifficultyOptions>,
-    isGuessCorrect: Boolean,
-    hasGivenUp: Boolean,
-  },
-
   computed: {
     gameStore: () => useGameStore(),
+
+    DifficultyOptions: () => DifficultyOptions,
   },
 });
 </script>
@@ -19,7 +15,10 @@ export default defineComponent({
 <template>
   <img
     :class="
-      !isGuessCorrect && !hasGivenUp && difficulty === 'normal' && 'unknown'
+      !gameStore.isGuessCorrect &&
+      !gameStore.hasGivenUp &&
+      gameStore.difficulty === DifficultyOptions.NORMAL &&
+      'unknown'
     "
     :src="gameStore.pokemon.img"
     draggable="false"
