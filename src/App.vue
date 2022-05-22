@@ -11,15 +11,21 @@ import { useTimeStore } from "./stores/time";
 import { useGameStore } from "./stores/game";
 
 export default defineComponent({
-  mounted() {
-    this.gameStore.selectAllGenerations();
-    this.nextPokemon();
-  },
-
   data() {
     return {
       title: "Who's that Pokémon?",
     };
+  },
+
+  mounted() {
+    this.gameStore.selectAllGenerations();
+    this.nextPokemon();
+
+    this.gameStore.$subscribe((mutation, state) => {
+      if (mutation.events.key !== "difficulty") return;
+      if (mutation.events.newValue === mutation.events.oldValue) return;
+      this.giveUp();
+    });
   },
 
   methods: {
@@ -82,14 +88,6 @@ export default defineComponent({
 
   computed: {
     ...mapStores(useScoreStore, useTimeStore, useGameStore),
-  },
-
-  watch: {
-    difficulty(newVal, oldVal) {
-      if (newVal === oldVal) return;
-
-      this.giveUp();
-    },
   },
 
   components: {
