@@ -20,12 +20,6 @@ export default defineComponent({
   mounted() {
     this.gameStore.selectAllGenerations();
     this.nextPokemon();
-
-    this.gameStore.$subscribe((mutation, state) => {
-      if (mutation.events.key !== "difficulty") return;
-      if (mutation.events.newValue === mutation.events.oldValue) return;
-      this.giveUp();
-    });
   },
 
   methods: {
@@ -88,6 +82,12 @@ export default defineComponent({
 
   computed: {
     ...mapStores(useScoreStore, useTimeStore, useGameStore),
+  },
+
+  watch: {
+    "gameStore.difficulty"() {
+      this.giveUp();
+    },
   },
 
   components: {
