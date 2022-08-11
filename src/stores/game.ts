@@ -84,7 +84,7 @@ export const useGameStore = defineStore("game", {
       );
       const species = await response.json();
       // English: 7
-      return species.names[7].name;
+      return species.names[7].name.replace(/\p{Extended_Pictographic}/u, "");
     },
 
     async setPokemon() {
