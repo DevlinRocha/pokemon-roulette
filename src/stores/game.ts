@@ -84,10 +84,7 @@ export const useGameStore = defineStore("game", {
       );
       const species = await response.json();
       // English: 7
-      return species.names[7].name
-        .normalize("NFKD")
-        .replace(/\p{Extended_Pictographic}/u, "")
-        .replace(/\p{Diacritic}/gu, "");
+      return species.names[7].name;
     },
 
     async setPokemon() {

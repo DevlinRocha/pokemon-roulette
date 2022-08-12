@@ -21,9 +21,18 @@ export default defineComponent({
       this.$emit("update:modelValue", capitalize(input.value));
 
       if (
-        input.value.toLowerCase() === this.gameStore.pokemon.name.toLowerCase()
+        this.compareValue(input.value) ===
+        this.compareValue(this.gameStore.pokemon.name)
       )
         this.$emit("correctGuess");
+    },
+
+    compareValue(value: string) {
+      return value
+        .normalize("NFKD")
+        .replace(/\p{Extended_Pictographic}/u, "")
+        .replace(/\p{Diacritic}/gu, "")
+        .toLowerCase();
     },
 
     focusInput() {
