@@ -26,9 +26,7 @@ export default defineComponent({
     async correctGuess() {
       this.gameStore.isGuessCorrect = true;
       this.stopTimer();
-      this.title = `It's ${await this.gameStore.getPokemonName(
-        this.gameStore.pokemon.id
-      )}!`;
+      this.title = `It's ${this.gameStore.pokemon.name}!`;
       this.scoreStore.currentScore++;
       this.focusButton();
     },
