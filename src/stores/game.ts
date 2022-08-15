@@ -97,8 +97,7 @@ export const useGameStore = defineStore("game", {
         pokemonId = getRandomId(this.minPokedex, this.maxPokedex);
 
         validPokemonId = this.acceptedPokemonIdRanges.some(
-          (range: [number, number]) =>
-            pokemonId > range[0] && pokemonId < range[1]
+          (range) => pokemonId >= range[0] && pokemonId <= range[1]
         );
 
         if (this.acceptedPokemonIdRanges.length === 0) {
