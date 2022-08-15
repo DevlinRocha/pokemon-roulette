@@ -17,9 +17,10 @@ export default defineComponent({
     };
   },
 
-  mounted() {
+  async mounted() {
     this.gameStore.selectAllGenerations();
-    this.nextPokemon();
+    await this.gameStore.loadPokemon();
+    await this.nextPokemon();
   },
 
   methods: {
@@ -51,6 +52,7 @@ export default defineComponent({
       this.title = "Who's that Pokémon?";
       this.focusInput();
       this.startTimer();
+      await this.gameStore.loadPokemon();
     },
 
     giveUp() {
