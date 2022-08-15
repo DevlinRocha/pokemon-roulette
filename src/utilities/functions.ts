@@ -5,6 +5,11 @@ export function capitalize(str: string) {
     .join(" ");
 }
 
-export function getRandomId(min: number, max: number) {
-  return Math.floor(Math.random() * (max + 1 - min)) + min;
+export function getRandomId(
+  min: number,
+  max: number,
+  excluded?: number[]
+): number {
+  const result = Math.floor(Math.random() * (max + 1 - min)) + min;
+  return excluded?.includes(result) ? getRandomId(min, max, excluded) : result;
 }
