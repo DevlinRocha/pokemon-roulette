@@ -20,7 +20,7 @@ export const useTimeStore = defineStore("time", {
           if (this.bestEasyTime !== -1 && this.prevTime > this.bestEasyTime)
             return;
           this.bestEasyTime = this.prevTime;
-          this.bestEasyPokemon = this.gameStore.pokemon.name;
+          this.bestEasyPokemon = this.gameStore.currentPokemon.name;
           this.newBestTime = true;
           break;
 
@@ -28,7 +28,7 @@ export const useTimeStore = defineStore("time", {
           if (this.bestNormalTime !== -1 && this.prevTime > this.bestNormalTime)
             return;
           this.bestNormalTime = this.prevTime;
-          this.bestNormalPokemon = this.gameStore.pokemon.name;
+          this.bestNormalPokemon = this.gameStore.currentPokemon.name;
           this.newBestTime = true;
       }
     },

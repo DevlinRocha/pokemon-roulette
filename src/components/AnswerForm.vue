@@ -22,7 +22,7 @@ export default defineComponent({
 
       if (
         this.compareValue(input.value) ===
-        this.compareValue(this.gameStore.pokemon.name)
+        this.compareValue(this.gameStore.currentPokemon.name)
       )
         this.$emit("correctGuess");
     },

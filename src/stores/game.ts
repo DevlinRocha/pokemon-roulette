@@ -11,7 +11,8 @@ export const useGameStore = defineStore("game", {
   state: () => ({
     minPokedex: 1,
     maxPokedex: 898,
-    pokemon: {} as PokemonData,
+    currentPokemon: {} as PokemonData,
+    nextPokemon: {} as PokemonData,
     generations: [
       {
         id: 1,
@@ -87,7 +88,7 @@ export const useGameStore = defineStore("game", {
       return species.names[7].name;
     },
 
-    async setPokemon() {
+    async loadPokemon() {
       let validPokemonId = false;
       let pokemonId: number;
 
@@ -107,11 +108,15 @@ export const useGameStore = defineStore("game", {
 
       const pokemonData = await this.getPokemon(pokemonId);
 
-      this.pokemon = new PokemonClass(
+      this.nextPokemon = new PokemonClass(
         pokemonId,
         await this.getPokemonName(pokemonId),
         pokemonData.sprites.front_default
       );
+    },
+
+    async setPokemon() {
+      this.currentPokemon = this.nextPokemon;
     },
   },
 

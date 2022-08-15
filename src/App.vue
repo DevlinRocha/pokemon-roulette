@@ -17,16 +17,17 @@ export default defineComponent({
     };
   },
 
-  mounted() {
+  async mounted() {
     this.gameStore.selectAllGenerations();
-    this.nextPokemon();
+    await this.gameStore.loadPokemon();
+    await this.nextPokemon();
   },
 
   methods: {
     async correctGuess() {
       this.gameStore.isGuessCorrect = true;
       this.stopTimer();
-      this.title = `It's ${this.gameStore.pokemon.name}!`;
+      this.title = `It's ${this.gameStore.currentPokemon.name}!`;
       this.scoreStore.currentScore++;
       this.focusButton();
     },
@@ -51,15 +52,16 @@ export default defineComponent({
       this.title = "Who's that Pokémon?";
       this.focusInput();
       this.startTimer();
+      await this.gameStore.loadPokemon();
     },
 
     giveUp() {
       this.stopTimer();
       this.scoreStore.giveUp();
-      this.gameStore.inputVal = this.gameStore.pokemon.name;
+      this.gameStore.inputVal = this.gameStore.currentPokemon.name;
       this.gameStore.isGuessCorrect = false;
       this.gameStore.hasGivenUp = true;
-      this.title = `It's ${this.gameStore.pokemon.name}!`;
+      this.title = `It's ${this.gameStore.currentPokemon.name}!`;
       this.timeStore.prevTime = -1;
       this.timeStore.currentTime = 0;
       this.focusButton();
