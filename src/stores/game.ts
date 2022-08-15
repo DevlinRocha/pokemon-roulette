@@ -88,7 +88,7 @@ export const useGameStore = defineStore("game", {
       return species.names[7].name;
     },
 
-    async loadPokemon(): Promise<void> {
+    async loadPokemon() {
       let validPokemonId = false;
       let pokemonId: number;
 
