@@ -94,7 +94,9 @@ export const useGameStore = defineStore("game", {
 
       do {
         // Can change minPokedex and maxPokedex for further optimization
-        pokemonId = getRandomId(this.minPokedex, this.maxPokedex);
+        pokemonId = getRandomId(this.minPokedex, this.maxPokedex, [
+          this.currentPokemon.id,
+        ]);
 
         validPokemonId = this.acceptedPokemonIdRanges.some(
           (range) => pokemonId >= range[0] && pokemonId <= range[1]
