@@ -27,7 +27,7 @@ export default defineComponent({
     async correctGuess() {
       this.gameStore.isGuessCorrect = true;
       this.stopTimer();
-      this.title = `It's ${this.gameStore.pokemon.name}!`;
+      this.title = `It's ${this.gameStore.currentPokemon.name}!`;
       this.scoreStore.currentScore++;
       this.focusButton();
     },
@@ -58,10 +58,10 @@ export default defineComponent({
     giveUp() {
       this.stopTimer();
       this.scoreStore.giveUp();
-      this.gameStore.inputVal = this.gameStore.pokemon.name;
+      this.gameStore.inputVal = this.gameStore.currentPokemon.name;
       this.gameStore.isGuessCorrect = false;
       this.gameStore.hasGivenUp = true;
-      this.title = `It's ${this.gameStore.pokemon.name}!`;
+      this.title = `It's ${this.gameStore.currentPokemon.name}!`;
       this.timeStore.prevTime = -1;
       this.timeStore.currentTime = 0;
       this.focusButton();

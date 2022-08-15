@@ -11,7 +11,7 @@ export const useGameStore = defineStore("game", {
   state: () => ({
     minPokedex: 1,
     maxPokedex: 898,
-    pokemon: {} as PokemonData,
+    currentPokemon: {} as PokemonData,
     nextPokemon: {} as PokemonData,
     generations: [
       {
@@ -116,7 +116,7 @@ export const useGameStore = defineStore("game", {
     },
 
     async setPokemon() {
-      this.pokemon = this.nextPokemon;
+      this.currentPokemon = this.nextPokemon;
     },
   },
 

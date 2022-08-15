@@ -20,7 +20,7 @@ export default defineComponent({
       gameStore.difficulty === DifficultyOptions.NORMAL &&
       'unknown'
     "
-    :src="gameStore.pokemon.img"
+    :src="gameStore.currentPokemon.img"
     draggable="false"
   />
 </template>
