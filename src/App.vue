@@ -58,9 +58,7 @@ export default defineComponent({
     giveUp() {
       this.stopTimer();
       this.scoreStore.giveUp();
-      this.gameStore.inputVal = this.gameStore.currentPokemon.name;
-      this.gameStore.isGuessCorrect = false;
-      this.gameStore.hasGivenUp = true;
+      this.gameStore.giveUp();
       this.title = `It's ${this.gameStore.currentPokemon.name}!`;
       this.timeStore.prevTime = -1;
       this.timeStore.currentTime = 0;
