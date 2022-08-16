@@ -119,6 +119,12 @@ export const useGameStore = defineStore("game", {
     async setPokemon() {
       this.currentPokemon = this.nextPokemon;
     },
+
+    giveUp() {
+      this.inputVal = this.currentPokemon.name;
+      this.isGuessCorrect = false;
+      this.hasGivenUp = true;
+    },
   },
 
   getters: {
