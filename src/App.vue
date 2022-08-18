@@ -82,12 +82,6 @@ export default defineComponent({
     ...mapStores(useScoreStore, useTimeStore, useGameStore),
   },
 
-  watch: {
-    "gameStore.difficulty"() {
-      this.giveUp();
-    },
-  },
-
   components: {
     Pokemon,
     GenerationFilter,
@@ -123,7 +117,10 @@ export default defineComponent({
 
       <div class="side-panel-right">
         <Scoreboard />
-        <DifficultySelection v-model="gameStore.difficulty" />
+        <DifficultySelection
+          v-model="gameStore.difficulty"
+          @changeDifficulty="giveUp"
+        />
       </div>
     </div>
   </div>
