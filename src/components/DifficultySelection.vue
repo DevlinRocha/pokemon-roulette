@@ -55,7 +55,7 @@ export default defineComponent({
 <template>
   <div class="flex">
     <span>Difficulty:</span>
-    <select @change="handleChange" ref="difficultyRef">
+    <select @change="handleChange" @click.stop ref="difficultyRef">
       <option
         v-for="option in DifficultyOptions"
         :key="option"
