@@ -29,17 +29,14 @@ export default defineComponent({
       this.stopTimer();
       this.title = `It's ${this.gameStore.currentPokemon.name}!`;
       this.scoreStore.currentScore++;
-      this.focusButton();
+      this.focus();
     },
 
-    focusInput() {
-      const answerFormRef = this.$refs.answerFormRef as any;
-      answerFormRef.focusInput();
-    },
-
-    focusButton() {
-      const answerFormRef = this.$refs.answerFormRef as any;
-      answerFormRef.focusButton();
+    focus(element?: HTMLInputElement | HTMLButtonElement) {
+      const answerFormRef = this.$refs.answerFormRef as InstanceType<
+        typeof AnswerForm
+      >;
+      answerFormRef.focus(element);
     },
 
     async nextPokemon() {
@@ -50,7 +47,7 @@ export default defineComponent({
       this.scoreStore.newHighScore = false;
       this.timeStore.newBestTime = false;
       this.title = "Who's that Pokémon?";
-      this.focusInput();
+      this.focus();
       this.startTimer();
       await this.gameStore.loadPokemon();
     },
@@ -62,7 +59,7 @@ export default defineComponent({
       this.title = `It's ${this.gameStore.currentPokemon.name}!`;
       this.timeStore.prevTime = -1;
       this.timeStore.currentTime = 0;
-      this.focusButton();
+      this.focus();
     },
 
     startTimer() {
@@ -93,7 +90,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <div class="column-container">
+  <div class="column-container" @click="focus()">
     <h1>{{ title }}</h1>
 
     <div class="container">
@@ -174,7 +171,7 @@ span.invalid {
   flex-direction: column;
   align-items: center;
   width: 100%;
-  height: auto;
+  height: 100%;
 }
 
 .container {

@@ -35,15 +35,18 @@ export default defineComponent({
         .toLowerCase();
     },
 
-    focusInput() {
-      const inputRef = this.$refs.inputRef as HTMLInputElement;
-      inputRef.disabled = false;
-      inputRef.focus();
-    },
+    focus(element?: HTMLInputElement | HTMLButtonElement) {
+      if (element) {
+        if (element.disabled) element.disabled = false;
+        return element.focus();
+      }
 
-    focusButton() {
-      const buttonRef = this.$refs.buttonRef as HTMLInputElement;
-      buttonRef.focus();
+      const inputRef = this.$refs.inputRef as HTMLInputElement;
+      const buttonRef = this.$refs.buttonRef as HTMLButtonElement;
+
+      this.$nextTick(() =>
+        inputRef.disabled ? buttonRef.focus() : inputRef.focus()
+      );
     },
   },
 
