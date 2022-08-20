@@ -174,7 +174,7 @@ span.invalid {
   flex-direction: column;
   align-items: center;
   width: 100%;
-  height: auto;
+  height: 100%;
 }
 
 .container {
