@@ -90,7 +90,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <div class="column-container">
+  <div class="column-container" @click="focus()">
     <h1>{{ title }}</h1>
 
     <div class="container">
