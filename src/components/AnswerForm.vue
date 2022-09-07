@@ -129,6 +129,7 @@ input.correct {
 input.invalid {
   background-color: var(--cancel-color);
   color: #fff;
+  -webkit-text-fill-color: #fff; /* Safari */
   border: 2px solid var(--cancel-color);
 }
 
