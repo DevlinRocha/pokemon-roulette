@@ -14,6 +14,12 @@ export default defineComponent({
     },
   },
 
+  data() {
+    return {
+      guess: "",
+    };
+  },
+
   methods: {
     handleInput() {
       const input = this.$refs.inputRef as HTMLInputElement;
@@ -33,6 +39,12 @@ export default defineComponent({
         .replace(/\p{Extended_Pictographic}/u, "")
         .replace(/\p{Diacritic}/gu, "")
         .toLowerCase();
+    },
+
+    giveUp() {
+      const input = this.$refs.inputRef as HTMLInputElement;
+      this.guess = input.value;
+      this.$emit("giveUp");
     },
 
     focus(element?: HTMLInputElement | HTMLButtonElement) {
@@ -62,7 +74,7 @@ export default defineComponent({
     @submit.prevent="
       gameStore.isGuessCorrect || gameStore.hasGivenUp
         ? $emit('nextPokemon')
-        : $emit('giveUp')
+        : giveUp()
     "
   >
     <span
@@ -70,13 +82,15 @@ export default defineComponent({
         !gameStore.isGuessCorrect &&
         !scoreStore.newHighScore &&
         !timeStore.newBestTime &&
+        (!gameStore.hasGivenUp || !guess) &&
         'hidden'
       "
     >
       {{
         (timeStore.newBestTime && "New best time!") ||
         (gameStore.isGuessCorrect && "Good job!") ||
-        (scoreStore.newHighScore && "New high score!")
+        (scoreStore.newHighScore && "New high score!") ||
+        (gameStore.hasGivenUp && `You guessed ${guess}`)
       }}
     </span>
 
