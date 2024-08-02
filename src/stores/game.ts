@@ -10,7 +10,7 @@ import {
 export const useGameStore = defineStore("game", {
   state: () => ({
     minPokedex: 1,
-    maxPokedex: 898,
+    maxPokedex: 1025,
     currentPokemon: {} as PokemonData,
     nextPokemon: {} as PokemonData,
     generations: [
@@ -53,6 +53,11 @@ export const useGameStore = defineStore("game", {
         id: 8,
         name: "Gen VIII",
         range: [810, 905],
+      },
+      {
+        id: 9,
+        name: "Gen IX",
+        range: [906, 1025],
       },
     ] as GenerationData[],
     selectedGenerationIds: [] as number[],
