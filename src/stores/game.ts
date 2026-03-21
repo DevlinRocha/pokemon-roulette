@@ -1,10 +1,11 @@
 import { defineStore } from "pinia";
 import { PokemonClass } from "../utilities/classes";
-import { getRandomId } from "../utilities/functions";
+import { formatPokemonName, getRandomId } from "../utilities/functions";
 import {
   DifficultyOptions,
   GenerationData,
   PokemonData,
+  PokemonNameData,
 } from "../utilities/interfaces";
 
 export const useGameStore = defineStore("game", {
@@ -61,6 +62,8 @@ export const useGameStore = defineStore("game", {
       },
     ] as GenerationData[],
     selectedGenerationIds: [] as number[],
+    pokemonNames: [] as PokemonNameData[],
+    isLoadingPokemonNames: false,
     inputVal: "",
     isGuessCorrect: false,
     hasGivenUp: false,
@@ -91,6 +94,29 @@ export const useGameStore = defineStore("game", {
       const species = await response.json();
       // English: 7
       return species.names[7].name;
+    },
+
+    async loadPokemonNames() {
+      if (this.pokemonNames.length || this.isLoadingPokemonNames) return;
+
+      this.isLoadingPokemonNames = true;
+
+      try {
+        const response = await fetch(
+          `https://pokeapi.co/api/v2/pokemon-species?limit=${this.maxPokedex}`
+        );
+        const species = await response.json();
+
+        this.pokemonNames = species.results
+          .map(({ name, url }: { name: string; url: string }) => ({
+            id: Number(url.split("/").filter(Boolean).pop()),
+            name: formatPokemonName(name),
+          }))
+          .filter(({ id }: PokemonNameData) => id <= this.maxPokedex)
+          .sort((a: PokemonNameData, b: PokemonNameData) => a.id - b.id);
+      } finally {
+        this.isLoadingPokemonNames = false;
+      }
     },
 
     async loadPokemon() {
@@ -141,6 +167,24 @@ export const useGameStore = defineStore("game", {
           generations[0];
         return selectedGeneration.range;
       });
+    },
+
+    autocompletePokemonNames: (state): PokemonNameData[] => {
+      const acceptedPokemonIdRanges = state.selectedGenerationIds.map((id) => {
+        const selectedGeneration =
+          state.generations.find((generation) => generation.id === id) ||
+          state.generations[0];
+
+        return selectedGeneration.range;
+      });
+
+      if (acceptedPokemonIdRanges.length === 0) return state.pokemonNames;
+
+      return state.pokemonNames.filter(({ id }: PokemonNameData) =>
+        acceptedPokemonIdRanges.some(
+          (range) => id >= range[0] && id <= range[1]
+        )
+      );
     },
   },
 });

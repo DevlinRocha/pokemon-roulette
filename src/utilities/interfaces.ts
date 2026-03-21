@@ -4,6 +4,11 @@ export interface PokemonData {
   img: string;
 }
 
+export interface PokemonNameData {
+  id: number;
+  name: string;
+}
+
 export interface GenerationData {
   id: number;
   name: string;

@@ -19,6 +19,7 @@ export default defineComponent({
 
   async mounted() {
     this.gameStore.selectAllGenerations();
+    void this.gameStore.loadPokemonNames();
     await this.gameStore.loadPokemon();
     await this.nextPokemon();
   },
