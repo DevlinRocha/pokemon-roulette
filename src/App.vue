@@ -119,6 +119,31 @@ export default defineComponent({
           v-model="gameStore.difficulty"
           @changeDifficulty="giveUp"
         />
+        <section class="hotkey-legend" @click.stop>
+          <h2>Hotkeys</h2>
+          <dl>
+            <div>
+              <dt>Arrow Up / Arrow Down</dt>
+              <dd>Move through autofill suggestions</dd>
+            </div>
+            <div>
+              <dt>Tab / Shift+Tab</dt>
+              <dd>Cycle autofill suggestions forward or backward</dd>
+            </div>
+            <div>
+              <dt>Enter</dt>
+              <dd>Choose the highlighted suggestion, or the top result</dd>
+            </div>
+            <div>
+              <dt>Shift+Enter</dt>
+              <dd>Give up</dd>
+            </div>
+            <div>
+              <dt>Escape</dt>
+              <dd>Close the autofill menu</dd>
+            </div>
+          </dl>
+        </section>
       </div>
     </div>
   </div>
@@ -206,5 +231,32 @@ span.invalid {
   width: 100%;
   height: auto;
   padding-top: 16px;
+}
+
+.hotkey-legend {
+  margin-top: 20px;
+  padding: 12px;
+  border: 2px solid var(--primary-color);
+  border-radius: 8px;
+  background-color: rgba(230, 188, 47, 0.12);
+}
+
+.hotkey-legend h2 {
+  margin-bottom: 8px;
+  font-size: 1rem;
+}
+
+.hotkey-legend dl {
+  display: grid;
+  gap: 10px;
+}
+
+.hotkey-legend dt {
+  font-weight: bold;
+}
+
+.hotkey-legend dd {
+  margin: 2px 0 0;
+  font-size: 0.95rem;
 }
 </style>
