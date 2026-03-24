@@ -88,38 +88,77 @@ export default defineComponent({
       window.setTimeout(() => this.closeSuggestions(), 100);
     },
 
+    cycleSuggestions(direction: 1 | -1) {
+      if (!this.shouldShowSuggestions) return;
+
+      const lastSuggestionIndex = this.suggestions.length - 1;
+
+      if (direction === 1) {
+        this.highlightedSuggestionIndex =
+          this.highlightedSuggestionIndex < lastSuggestionIndex
+            ? this.highlightedSuggestionIndex + 1
+            : 0;
+        return;
+      }
+
+      this.highlightedSuggestionIndex =
+        this.highlightedSuggestionIndex > 0
+          ? this.highlightedSuggestionIndex - 1
+          : lastSuggestionIndex;
+    },
+
     handleKeydown(event: KeyboardEvent) {
       if (event.key === "Escape") {
         this.closeSuggestions();
         return;
       }
 
-      if (!this.suggestions.length) return;
+      if (
+        event.key === "Enter" &&
+        event.shiftKey &&
+        !this.gameStore.isGuessCorrect &&
+        !this.gameStore.hasGivenUp
+      ) {
+        event.preventDefault();
+        this.giveUp();
+        return;
+      }
 
       if (event.key === "ArrowDown") {
+        if (!this.suggestions.length) return;
         event.preventDefault();
         this.isSuggestionMenuOpen = true;
-        this.highlightedSuggestionIndex =
-          this.highlightedSuggestionIndex < this.suggestions.length - 1
-            ? this.highlightedSuggestionIndex + 1
-            : 0;
+        this.cycleSuggestions(1);
       }
 
       if (event.key === "ArrowUp") {
+        if (!this.suggestions.length) return;
         event.preventDefault();
-        this.highlightedSuggestionIndex =
-          this.highlightedSuggestionIndex > 0
-            ? this.highlightedSuggestionIndex - 1
-            : this.suggestions.length - 1;
+        this.cycleSuggestions(-1);
+      }
+
+      if (event.key === "Tab" && this.shouldShowSuggestions) {
+        event.preventDefault();
+        this.cycleSuggestions(event.shiftKey ? -1 : 1);
       }
 
       if (
         event.key === "Enter" &&
-        this.shouldShowSuggestions &&
-        this.highlightedSuggestionIndex >= 0
+        !this.gameStore.isGuessCorrect &&
+        !this.gameStore.hasGivenUp
       ) {
         event.preventDefault();
-        this.selectSuggestion(this.suggestions[this.highlightedSuggestionIndex]);
+
+        if (!this.shouldShowSuggestions) return;
+
+        const selectedSuggestion =
+          this.highlightedSuggestionIndex >= 0
+            ? this.suggestions[this.highlightedSuggestionIndex]
+            : this.suggestions[0];
+
+        if (selectedSuggestion) {
+          this.selectSuggestion(selectedSuggestion);
+        }
       }
     },
 
