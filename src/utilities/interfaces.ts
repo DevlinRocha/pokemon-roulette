@@ -2,6 +2,9 @@ export interface PokemonData {
   id: number;
   name: string;
   img: string;
+  types: string[];
+  height: number;
+  weight: number;
 }
 
 export interface PokemonNameData {
