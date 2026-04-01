@@ -5,6 +5,7 @@ import GenerationFilter from "./components/GenerationFilter.vue";
 import DifficultySelection from "./components/DifficultySelection.vue";
 import AnswerForm from "./components/AnswerForm.vue";
 import Scoreboard from "./components/Scoreboard.vue";
+import PokemonInfoCard from "./components/PokemonInfoCard.vue";
 import { mapStores } from "pinia";
 import { useScoreStore } from "./stores/score";
 import { useTimeStore } from "./stores/time";
@@ -86,6 +87,7 @@ export default defineComponent({
     DifficultySelection,
     AnswerForm,
     Scoreboard,
+    PokemonInfoCard,
   },
 });
 </script>
@@ -111,6 +113,8 @@ export default defineComponent({
           @nextPokemon="nextPokemon"
           @giveUp="giveUp"
         />
+
+        <PokemonInfoCard />
       </div>
 
       <div class="side-panel-right">
