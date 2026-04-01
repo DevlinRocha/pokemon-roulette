@@ -222,7 +222,6 @@ export default defineComponent({
 
 <template>
   <form
-    class="column-container"
     @submit.prevent="
       gameStore.isGuessCorrect || gameStore.hasGivenUp
         ? $emit('nextPokemon')
@@ -292,6 +291,13 @@ export default defineComponent({
 </template>
 
 <style scoped>
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
 .input-container {
   position: relative;
   width: min(100%, 22rem);
