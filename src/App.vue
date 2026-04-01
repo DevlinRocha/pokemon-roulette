@@ -120,19 +120,18 @@ export default defineComponent({
           @changeDifficulty="giveUp"
         />
         <section class="hotkey-legend" @click.stop>
-          <h2>Hotkeys</h2>
           <dl>
             <div>
-              <dt>Arrow Up / Arrow Down</dt>
-              <dd>Move through autofill suggestions</dd>
-            </div>
-            <div>
-              <dt>Tab / Shift+Tab</dt>
-              <dd>Cycle autofill suggestions forward or backward</dd>
-            </div>
             <div>
               <dt>Enter</dt>
               <dd>Choose the highlighted suggestion, or the top result</dd>
+            </div>
+              <dt>Arrow Down / Tab | Arrow Up</dt>
+              <dd>Move down through autofill suggestions</dd>
+            </div>
+            <div>
+              <dt>Arrow Up / Shift+Tab</dt>
+              <dd>Move up through autofill suggestions</dd>
             </div>
             <div>
               <dt>Shift+Enter</dt>
