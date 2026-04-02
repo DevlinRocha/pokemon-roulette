@@ -8,6 +8,29 @@ import {
   PokemonNameData,
 } from "../utilities/interfaces";
 
+function getAcceptedPokemonIdRanges(
+  selectedGenerationIds: number[],
+  generations: GenerationData[]
+) {
+  return selectedGenerationIds.map((id) => {
+    const selectedGeneration =
+      generations.find((generation) => generation.id === id) || generations[0];
+
+    return selectedGeneration.range;
+  });
+}
+
+function isPokemonIdAccepted(
+  id: number,
+  acceptedPokemonIdRanges: [number, number][]
+) {
+  if (acceptedPokemonIdRanges.length === 0) return true;
+
+  return acceptedPokemonIdRanges.some(
+    (range) => id >= range[0] && id <= range[1]
+  );
+}
+
 export const useGameStore = defineStore("game", {
   state: () => ({
     minPokedex: 1,
@@ -68,6 +91,7 @@ export const useGameStore = defineStore("game", {
     isGuessCorrect: false,
     hasGivenUp: false,
     difficulty: DifficultyOptions.NORMAL,
+    nextPokemonRequestId: 0,
   }),
 
   actions: {
@@ -120,7 +144,11 @@ export const useGameStore = defineStore("game", {
     },
 
     async loadPokemon() {
-      let validPokemonId = false;
+      const requestId = ++this.nextPokemonRequestId;
+      const acceptedPokemonIdRanges = getAcceptedPokemonIdRanges(
+        this.selectedGenerationIds,
+        this.generations
+      );
       let pokemonId: number;
 
       do {
@@ -128,22 +156,34 @@ export const useGameStore = defineStore("game", {
         pokemonId = getRandomId(this.minPokedex, this.maxPokedex, [
           this.currentPokemon.id,
         ]);
-
-        validPokemonId = this.acceptedPokemonIdRanges.some(
-          (range) => pokemonId >= range[0] && pokemonId <= range[1]
-        );
-
-        if (this.acceptedPokemonIdRanges.length === 0) {
-          validPokemonId = true;
-        }
-      } while (!validPokemonId);
+      } while (!isPokemonIdAccepted(pokemonId, acceptedPokemonIdRanges));
 
       const pokemonData = await this.getPokemon(pokemonId);
+      const pokemonName = await this.getPokemonName(pokemonId);
+
+      if (requestId !== this.nextPokemonRequestId) return;
+
+      if (!isPokemonIdAccepted(pokemonId, this.acceptedPokemonIdRanges)) {
+        await this.loadPokemon();
+        return;
+      }
 
       this.nextPokemon = new PokemonClass(
         pokemonId,
-        await this.getPokemonName(pokemonId),
-        pokemonData.sprites.front_default
+        pokemonName,
+        pokemonData.sprites.front_default,
+        pokemonData.types
+          .sort(
+            (
+              a: { slot: number; type: { name: string } },
+              b: { slot: number; type: { name: string } }
+            ) => a.slot - b.slot
+          )
+          .map(({ type }: { type: { name: string } }) =>
+            formatPokemonName(type.name)
+          ),
+        pokemonData.height,
+        pokemonData.weight,
       );
     },
 
@@ -161,29 +201,19 @@ export const useGameStore = defineStore("game", {
 
   getters: {
     acceptedPokemonIdRanges: ({ selectedGenerationIds, generations }) => {
-      return selectedGenerationIds.map((id) => {
-        const selectedGeneration =
-          generations.find((generation) => generation.id === id) ||
-          generations[0];
-        return selectedGeneration.range;
-      });
+      return getAcceptedPokemonIdRanges(selectedGenerationIds, generations);
     },
 
     autocompletePokemonNames: (state): PokemonNameData[] => {
-      const acceptedPokemonIdRanges = state.selectedGenerationIds.map((id) => {
-        const selectedGeneration =
-          state.generations.find((generation) => generation.id === id) ||
-          state.generations[0];
-
-        return selectedGeneration.range;
-      });
+      const acceptedPokemonIdRanges = getAcceptedPokemonIdRanges(
+        state.selectedGenerationIds,
+        state.generations
+      );
 
       if (acceptedPokemonIdRanges.length === 0) return state.pokemonNames;
 
       return state.pokemonNames.filter(({ id }: PokemonNameData) =>
-        acceptedPokemonIdRanges.some(
-          (range) => id >= range[0] && id <= range[1]
-        )
+        isPokemonIdAccepted(id, acceptedPokemonIdRanges)
       );
     },
   },
