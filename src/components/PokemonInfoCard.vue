@@ -51,6 +51,10 @@ export default defineComponent({
     formattedWeight(): string {
       return `${(this.gameStore.currentPokemon.weight / 10).toFixed(1)} kg`;
     },
+
+    generationLabel(): string {
+      return this.gameStore.currentPokemon.generation;
+    },
   },
 });
 </script>
@@ -86,6 +90,10 @@ export default defineComponent({
         <div>
           <dt>Weight</dt>
           <dd>{{ formattedWeight }}</dd>
+        </div>
+        <div>
+          <dt>Generation</dt>
+          <dd>{{ generationLabel }}</dd>
         </div>
       </dl>
     </div>
@@ -164,7 +172,7 @@ export default defineComponent({
 
 .stat-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
 }
 

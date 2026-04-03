@@ -30,6 +30,9 @@ type PokemonSpeciesResponse = {
     };
     name: string;
   }>;
+  generation: {
+    name: string;
+  };
 };
 
 type PokemonSpeciesListResponse = {
@@ -94,6 +97,7 @@ const EMPTY_POKEMON = (): PokemonData => ({
   types: [],
   height: 0,
   weight: 0,
+  generation: "",
 });
 
 async function fetchJson<T>(url: string): Promise<T> {
@@ -149,18 +153,26 @@ function getRandomAcceptedPokemonId(
 
 function createPokemon(
   id: number,
-  name: string,
-  pokemonData: PokemonApiResponse
+  pokemonData: PokemonApiResponse,
+  speciesData: PokemonSpeciesResponse
 ): PokemonData {
+  const englishName = speciesData.names.find(
+    ({ language }) => language.name === "en"
+  );
+  const generation = speciesData.generation.name
+    .replace("generation-", "Gen ")
+    .toUpperCase();
+
   return new PokemonClass(
     id,
-    name,
+    englishName?.name || formatPokemonName(speciesData.name),
     pokemonData.sprites.front_default,
     [...pokemonData.types]
       .sort((a, b) => a.slot - b.slot)
       .map(({ type }) => formatPokemonName(type.name)),
     pokemonData.height,
-    pokemonData.weight
+    pokemonData.weight,
+    generation
   );
 }
 
@@ -200,16 +212,10 @@ export const useGameStore = defineStore("game", {
       );
     },
 
-    async getPokemonName(id: number) {
-      const species = await fetchJson<PokemonSpeciesResponse>(
+    async getPokemonSpecies(id: number) {
+      return fetchJson<PokemonSpeciesResponse>(
         `https://pokeapi.co/api/v2/pokemon-species/${id}`
       );
-
-      const englishName = species.names.find(
-        ({ language }) => language.name === "en"
-      );
-
-      return englishName?.name || formatPokemonName(species.name);
     },
 
     async loadPokemonNames() {
@@ -246,9 +252,9 @@ export const useGameStore = defineStore("game", {
           this.currentPokemon.id
         );
 
-        const [pokemonData, pokemonName] = await Promise.all([
+        const [pokemonData, speciesData] = await Promise.all([
           this.getPokemon(pokemonId),
-          this.getPokemonName(pokemonId),
+          this.getPokemonSpecies(pokemonId),
         ]);
 
         if (requestId !== this.nextPokemonRequestId) return;
@@ -257,7 +263,7 @@ export const useGameStore = defineStore("game", {
           continue;
         }
 
-        this.nextPokemon = createPokemon(pokemonId, pokemonName, pokemonData);
+        this.nextPokemon = createPokemon(pokemonId, pokemonData, speciesData);
         return;
       }
     },
