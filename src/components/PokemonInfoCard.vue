@@ -269,7 +269,7 @@ export default defineComponent({
   background-color: #d685ad;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 1024px) {
   .pokemon-info-card {
     padding: 16px;
   }
