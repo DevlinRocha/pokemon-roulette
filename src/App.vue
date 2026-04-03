@@ -99,11 +99,16 @@ export default defineComponent({
     <h1>{{ title }}</h1>
 
     <div class="container">
-      <GenerationFilter
-        v-model="gameStore.selectedGenerationIds"
-        @toggleGeneration="giveUp"
-        class="side-panel-left"
-      />
+      <div class="side-panel-left">
+        <GenerationFilter
+          v-model="gameStore.selectedGenerationIds"
+          @toggleGeneration="giveUp"
+        />
+
+        <div class="side-panel-left-info">
+          <PokemonInfoCard />
+        </div>
+      </div>
 
       <div class="center-panel">
         <Pokemon />
@@ -117,7 +122,6 @@ export default defineComponent({
         />
 
         <PokemonNameBadges />
-        <PokemonInfoCard />
       </div>
 
       <div class="side-panel-right">
@@ -220,6 +224,10 @@ span.invalid {
   width: 100%;
   height: auto;
   padding-top: 16px;
+}
+
+.side-panel-left-info {
+  width: 100%;
 }
 
 .center-panel {
