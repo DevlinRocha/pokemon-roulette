@@ -4,6 +4,7 @@ import { formatPokemonName, getRandomId } from "../utilities/functions";
 import {
   DifficultyOptions,
   GenerationData,
+  LocalizedPokemonName,
   PokemonData,
   PokemonNameData,
 } from "../utilities/interfaces";
@@ -90,6 +91,19 @@ const GENERATIONS: GenerationData[] = [
   },
 ];
 
+const LOCALIZED_NAME_LANGUAGES: Array<{
+  apiName: string;
+  language: string;
+  flag: string;
+}> = [
+  { apiName: "ja-Hrkt", language: "Japanese", flag: "🇯🇵" },
+  { apiName: "es", language: "Spanish", flag: "🇪🇸" },
+  { apiName: "fr", language: "French", flag: "🇫🇷" },
+  { apiName: "de", language: "German", flag: "🇩🇪" },
+  { apiName: "ko", language: "Korean", flag: "🇰🇷" },
+  { apiName: "zh-Hans", language: "Chinese", flag: "🇨🇳" },
+];
+
 const EMPTY_POKEMON = (): PokemonData => ({
   id: 0,
   name: "",
@@ -98,6 +112,7 @@ const EMPTY_POKEMON = (): PokemonData => ({
   height: 0,
   weight: 0,
   generation: "",
+  localizedNames: [],
 });
 
 async function fetchJson<T>(url: string): Promise<T> {
@@ -162,6 +177,21 @@ function createPokemon(
   const generation = speciesData.generation.name
     .replace("generation-", "Gen ")
     .toUpperCase();
+  const localizedNames: LocalizedPokemonName[] = LOCALIZED_NAME_LANGUAGES
+    .map(({ apiName, language, flag }) => {
+      const localizedName = speciesData.names.find(
+        ({ language: entryLanguage }) => entryLanguage.name === apiName
+      );
+
+      if (!localizedName?.name) return null;
+
+      return {
+        language,
+        flag,
+        name: localizedName.name,
+      };
+    })
+    .filter((entry): entry is LocalizedPokemonName => entry !== null);
 
   return new PokemonClass(
     id,
@@ -172,7 +202,8 @@ function createPokemon(
       .map(({ type }) => formatPokemonName(type.name)),
     pokemonData.height,
     pokemonData.weight,
-    generation
+    generation,
+    localizedNames
   );
 }
 

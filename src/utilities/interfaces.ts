@@ -1,3 +1,9 @@
+export interface LocalizedPokemonName {
+  language: string;
+  flag: string;
+  name: string;
+}
+
 export interface PokemonData {
   id: number;
   name: string;
@@ -6,6 +12,7 @@ export interface PokemonData {
   height: number;
   weight: number;
   generation: string;
+  localizedNames: LocalizedPokemonName[];
 }
 
 export interface PokemonNameData {

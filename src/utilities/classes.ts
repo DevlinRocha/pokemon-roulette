@@ -1,3 +1,5 @@
+import { LocalizedPokemonName } from "./interfaces";
+
 export class PokemonClass {
   id: number;
   name: string;
@@ -6,6 +8,7 @@ export class PokemonClass {
   height: number;
   weight: number;
   generation: string;
+  localizedNames: LocalizedPokemonName[];
 
   constructor(
     id: number,
@@ -15,6 +18,7 @@ export class PokemonClass {
     height: number,
     weight: number,
     generation: string,
+    localizedNames: LocalizedPokemonName[],
   ) {
     this.id = id;
     this.name = name;
@@ -23,5 +27,6 @@ export class PokemonClass {
     this.height = height;
     this.weight = weight;
     this.generation = generation;
+    this.localizedNames = localizedNames;
   }
 }
