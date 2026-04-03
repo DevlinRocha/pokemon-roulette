@@ -8,16 +8,115 @@ import {
   PokemonNameData,
 } from "../utilities/interfaces";
 
+type PokemonApiResponse = {
+  sprites: {
+    front_default: string;
+  };
+  types: Array<{
+    slot: number;
+    type: {
+      name: string;
+    };
+  }>;
+  height: number;
+  weight: number;
+};
+
+type PokemonSpeciesResponse = {
+  name: string;
+  names: Array<{
+    language: {
+      name: string;
+    };
+    name: string;
+  }>;
+};
+
+type PokemonSpeciesListResponse = {
+  results: Array<{
+    name: string;
+    url: string;
+  }>;
+};
+
+const GENERATIONS: GenerationData[] = [
+  {
+    id: 1,
+    name: "Gen I",
+    range: [1, 151],
+  },
+  {
+    id: 2,
+    name: "Gen II",
+    range: [152, 251],
+  },
+  {
+    id: 3,
+    name: "Gen III",
+    range: [252, 386],
+  },
+  {
+    id: 4,
+    name: "Gen IV",
+    range: [387, 493],
+  },
+  {
+    id: 5,
+    name: "Gen V",
+    range: [494, 649],
+  },
+  {
+    id: 6,
+    name: "Gen VI",
+    range: [650, 721],
+  },
+  {
+    id: 7,
+    name: "Gen VII",
+    range: [722, 809],
+  },
+  {
+    id: 8,
+    name: "Gen VIII",
+    range: [810, 905],
+  },
+  {
+    id: 9,
+    name: "Gen IX",
+    range: [906, 1025],
+  },
+];
+
+const EMPTY_POKEMON = (): PokemonData => ({
+  id: 0,
+  name: "",
+  img: "",
+  types: [],
+  height: 0,
+  weight: 0,
+});
+
+async function fetchJson<T>(url: string): Promise<T> {
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`Request failed with status ${response.status}: ${url}`);
+  }
+
+  return (await response.json()) as T;
+}
+
 function getAcceptedPokemonIdRanges(
   selectedGenerationIds: number[],
   generations: GenerationData[]
-) {
-  return selectedGenerationIds.map((id) => {
-    const selectedGeneration =
-      generations.find((generation) => generation.id === id) || generations[0];
+): [number, number][] {
+  if (selectedGenerationIds.length === 0) return [];
 
-    return selectedGeneration.range;
-  });
+  const selectedGenerationIdSet = new Set(selectedGenerationIds);
+
+  return generations
+    .filter(({ id }) => selectedGenerationIdSet.has(id))
+    .map(({ range }) => range);
 }
 
 function isPokemonIdAccepted(
@@ -31,59 +130,47 @@ function isPokemonIdAccepted(
   );
 }
 
+function getRandomAcceptedPokemonId(
+  minPokedex: number,
+  maxPokedex: number,
+  acceptedPokemonIdRanges: [number, number][],
+  currentPokemonId?: number
+) {
+  let pokemonId: number;
+
+  do {
+    pokemonId = getRandomId(minPokedex, maxPokedex, currentPokemonId ? [
+      currentPokemonId,
+    ] : undefined);
+  } while (!isPokemonIdAccepted(pokemonId, acceptedPokemonIdRanges));
+
+  return pokemonId;
+}
+
+function createPokemon(
+  id: number,
+  name: string,
+  pokemonData: PokemonApiResponse
+): PokemonData {
+  return new PokemonClass(
+    id,
+    name,
+    pokemonData.sprites.front_default,
+    [...pokemonData.types]
+      .sort((a, b) => a.slot - b.slot)
+      .map(({ type }) => formatPokemonName(type.name)),
+    pokemonData.height,
+    pokemonData.weight
+  );
+}
+
 export const useGameStore = defineStore("game", {
   state: () => ({
     minPokedex: 1,
     maxPokedex: 1025,
-    currentPokemon: {} as PokemonData,
-    nextPokemon: {} as PokemonData,
-    generations: [
-      {
-        id: 1,
-        name: "Gen I",
-        range: [1, 151],
-      },
-      {
-        id: 2,
-        name: "Gen II",
-        range: [152, 251],
-      },
-      {
-        id: 3,
-        name: "Gen III",
-        range: [252, 386],
-      },
-      {
-        id: 4,
-        name: "Gen IV",
-        range: [387, 493],
-      },
-      {
-        id: 5,
-        name: "Gen V",
-        range: [494, 649],
-      },
-      {
-        id: 6,
-        name: "Gen VI",
-        range: [650, 721],
-      },
-      {
-        id: 7,
-        name: "Gen VII",
-        range: [722, 809],
-      },
-      {
-        id: 8,
-        name: "Gen VIII",
-        range: [810, 905],
-      },
-      {
-        id: 9,
-        name: "Gen IX",
-        range: [906, 1025],
-      },
-    ] as GenerationData[],
+    currentPokemon: EMPTY_POKEMON(),
+    nextPokemon: EMPTY_POKEMON(),
+    generations: GENERATIONS,
     selectedGenerationIds: [] as number[],
     pokemonNames: [] as PokemonNameData[],
     isLoadingPokemonNames: false,
@@ -102,22 +189,27 @@ export const useGameStore = defineStore("game", {
     },
 
     async getPokemon(id: number) {
-      if (id > this.maxPokedex)
+      if (id < this.minPokedex || id > this.maxPokedex) {
         throw new Error(
-          `Pokémon not found. There are ${this.maxPokedex} known Pokémon.`
+          `Pokémon not found. Choose an id between ${this.minPokedex} and ${this.maxPokedex}.`
         );
+      }
 
-      const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
-      return await response.json();
+      return fetchJson<PokemonApiResponse>(
+        `https://pokeapi.co/api/v2/pokemon/${id}`
+      );
     },
 
     async getPokemonName(id: number) {
-      const response = await fetch(
+      const species = await fetchJson<PokemonSpeciesResponse>(
         `https://pokeapi.co/api/v2/pokemon-species/${id}`
       );
-      const species = await response.json();
-      // English: 7
-      return species.names[7].name;
+
+      const englishName = species.names.find(
+        ({ language }) => language.name === "en"
+      );
+
+      return englishName?.name || formatPokemonName(species.name);
     },
 
     async loadPokemonNames() {
@@ -126,18 +218,17 @@ export const useGameStore = defineStore("game", {
       this.isLoadingPokemonNames = true;
 
       try {
-        const response = await fetch(
+        const species = await fetchJson<PokemonSpeciesListResponse>(
           `https://pokeapi.co/api/v2/pokemon-species?limit=${this.maxPokedex}`
         );
-        const species = await response.json();
 
         this.pokemonNames = species.results
-          .map(({ name, url }: { name: string; url: string }) => ({
+          .map(({ name, url }) => ({
             id: Number(url.split("/").filter(Boolean).pop()),
             name: formatPokemonName(name),
           }))
-          .filter(({ id }: PokemonNameData) => id <= this.maxPokedex)
-          .sort((a: PokemonNameData, b: PokemonNameData) => a.id - b.id);
+          .filter(({ id }) => id <= this.maxPokedex)
+          .sort((a, b) => a.id - b.id);
       } finally {
         this.isLoadingPokemonNames = false;
       }
@@ -145,49 +236,33 @@ export const useGameStore = defineStore("game", {
 
     async loadPokemon() {
       const requestId = ++this.nextPokemonRequestId;
-      const acceptedPokemonIdRanges = getAcceptedPokemonIdRanges(
-        this.selectedGenerationIds,
-        this.generations
-      );
-      let pokemonId: number;
 
-      do {
-        // Can change minPokedex and maxPokedex for further optimization
-        pokemonId = getRandomId(this.minPokedex, this.maxPokedex, [
-          this.currentPokemon.id,
+      while (requestId === this.nextPokemonRequestId) {
+        const acceptedPokemonIdRanges = this.acceptedPokemonIdRanges;
+        const pokemonId = getRandomAcceptedPokemonId(
+          this.minPokedex,
+          this.maxPokedex,
+          acceptedPokemonIdRanges,
+          this.currentPokemon.id
+        );
+
+        const [pokemonData, pokemonName] = await Promise.all([
+          this.getPokemon(pokemonId),
+          this.getPokemonName(pokemonId),
         ]);
-      } while (!isPokemonIdAccepted(pokemonId, acceptedPokemonIdRanges));
 
-      const pokemonData = await this.getPokemon(pokemonId);
-      const pokemonName = await this.getPokemonName(pokemonId);
+        if (requestId !== this.nextPokemonRequestId) return;
 
-      if (requestId !== this.nextPokemonRequestId) return;
+        if (!isPokemonIdAccepted(pokemonId, this.acceptedPokemonIdRanges)) {
+          continue;
+        }
 
-      if (!isPokemonIdAccepted(pokemonId, this.acceptedPokemonIdRanges)) {
-        await this.loadPokemon();
+        this.nextPokemon = createPokemon(pokemonId, pokemonName, pokemonData);
         return;
       }
-
-      this.nextPokemon = new PokemonClass(
-        pokemonId,
-        pokemonName,
-        pokemonData.sprites.front_default,
-        pokemonData.types
-          .sort(
-            (
-              a: { slot: number; type: { name: string } },
-              b: { slot: number; type: { name: string } }
-            ) => a.slot - b.slot
-          )
-          .map(({ type }: { type: { name: string } }) =>
-            formatPokemonName(type.name)
-          ),
-        pokemonData.height,
-        pokemonData.weight,
-      );
     },
 
-    async setPokemon() {
+    setPokemon() {
       this.currentPokemon = this.nextPokemon;
     },
 
@@ -195,25 +270,23 @@ export const useGameStore = defineStore("game", {
       this.inputVal = this.currentPokemon.name;
       this.isGuessCorrect = false;
       this.hasGivenUp = true;
-      this.loadPokemon();
+      void this.loadPokemon();
     },
   },
 
   getters: {
-    acceptedPokemonIdRanges: ({ selectedGenerationIds, generations }) => {
-      return getAcceptedPokemonIdRanges(selectedGenerationIds, generations);
+    acceptedPokemonIdRanges(): [number, number][] {
+      return getAcceptedPokemonIdRanges(
+        this.selectedGenerationIds,
+        this.generations
+      );
     },
 
-    autocompletePokemonNames: (state): PokemonNameData[] => {
-      const acceptedPokemonIdRanges = getAcceptedPokemonIdRanges(
-        state.selectedGenerationIds,
-        state.generations
-      );
+    autocompletePokemonNames(): PokemonNameData[] {
+      if (this.acceptedPokemonIdRanges.length === 0) return this.pokemonNames;
 
-      if (acceptedPokemonIdRanges.length === 0) return state.pokemonNames;
-
-      return state.pokemonNames.filter(({ id }: PokemonNameData) =>
-        isPokemonIdAccepted(id, acceptedPokemonIdRanges)
+      return this.pokemonNames.filter(({ id }) =>
+        isPokemonIdAccepted(id, this.acceptedPokemonIdRanges)
       );
     },
   },
