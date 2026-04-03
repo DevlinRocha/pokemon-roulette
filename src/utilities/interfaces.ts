@@ -5,6 +5,7 @@ export interface PokemonData {
   types: string[];
   height: number;
   weight: number;
+  generation: string;
 }
 
 export interface PokemonNameData {

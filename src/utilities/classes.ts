@@ -5,6 +5,7 @@ export class PokemonClass {
   types: string[];
   height: number;
   weight: number;
+  generation: string;
 
   constructor(
     id: number,
@@ -13,6 +14,7 @@ export class PokemonClass {
     types: string[],
     height: number,
     weight: number,
+    generation: string,
   ) {
     this.id = id;
     this.name = name;
@@ -20,5 +22,6 @@ export class PokemonClass {
     this.types = types;
     this.height = height;
     this.weight = weight;
+    this.generation = generation;
   }
 }
